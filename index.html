@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoneyFast - Vay Tiền Nhanh Online | Giải Ngân Trong 15 Phút</title>
-    <meta name="description" content="MoneyFast - Dịch vụ vay tiền online nhanh chóng, lãi suất thấp, giải ngân trong 15 phút. Hỗ trợ 24/7, thủ tục đơn giản chỉ cần CMND/CCCD.">
+    <title>MoneyFast - Hệ Thống Chuyển Tiền Tự Động</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -12,6 +11,7 @@
             --primary-dark: #004d99;
             --secondary: #ff6b35;
             --accent: #28a745;
+            --danger: #dc3545;
             --dark: #1a1a2e;
             --light: #f8f9fa;
             --gray: #6c757d;
@@ -30,1432 +30,1019 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--dark);
-            background-color: var(--light);
-            overflow-x: hidden;
-        }
-
-        /* Preloader */
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--white);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
             display: flex;
+            align-items: center;
             justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        .preloader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #e0e0e0;
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            padding: 20px;
         }
 
-        /* Header */
-        header {
+        /* Main Container */
+        .transfer-system {
             background: var(--white);
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .header-top {
-            background: var(--dark);
-            color: var(--white);
-            padding: 8px 0;
-            font-size: 14px;
-        }
-        .header-top .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .header-top a {
-            color: var(--white);
-            text-decoration: none;
-            margin-left: 20px;
-            transition: var(--transition);
-        }
-        .header-top a:hover {
-            color: var(--secondary);
-        }
-        .header-top i {
-            margin-right: 5px;
-            color: var(--secondary);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--primary);
-            font-size: 28px;
-            font-weight: 800;
-        }
-        .logo i {
-            font-size: 35px;
-            margin-right: 10px;
-            color: var(--secondary);
-        }
-        .logo span {
-            color: var(--secondary);
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-            align-items: center;
-        }
-        .nav-links a {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
-        }
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--primary);
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary);
-            transition: var(--transition);
-        }
-        .nav-links a:hover::after,
-        .nav-links a.active::after {
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
             width: 100%;
-        }
-
-        .btn-primary {
-            background: var(--secondary);
-            color: var(--white);
-            padding: 12px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-block;
-        }
-        .btn-primary:hover {
-            background: #e55a2b;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,107,53,0.4);
-        }
-        .btn-outline {
-            background: transparent;
-            color: var(--primary);
-            padding: 12px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            border: 2px solid var(--primary);
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-block;
-        }
-        .btn-outline:hover {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 5px;
-        }
-        .hamburger span {
-            width: 30px;
-            height: 3px;
-            background: var(--dark);
-            border-radius: 3px;
-            transition: var(--transition);
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            color: var(--white);
-            padding: 80px 0;
-            position: relative;
+            max-width: 1000px;
             overflow: hidden;
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 400px;
-            height: 400px;
-            background: rgba(255,107,53,0.1);
-            border-radius: 50%;
-        }
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -150px;
-            left: -150px;
-            width: 500px;
-            height: 500px;
-            background: rgba(0,102,204,0.1);
-            border-radius: 50%;
-        }
-        .hero .container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            align-items: center;
-            position: relative;
-            z-index: 1;
+            grid-template-columns: 350px 1fr;
+            min-height: 600px;
         }
-        .hero-content h1 {
-            font-size: 48px;
+
+        /* Sidebar - Account List */
+        .sidebar {
+            background: var(--dark);
+            color: var(--white);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .sidebar-header .logo-small {
+            font-size: 22px;
             font-weight: 800;
-            line-height: 1.2;
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+        .sidebar-header .logo-small i {
+            color: var(--secondary);
+            margin-right: 5px;
+        }
+        .sidebar-header .logo-small span {
+            color: var(--secondary);
+        }
+
+        .total-transfer-info {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
             margin-bottom: 20px;
         }
-        .hero-content h1 span {
-            color: var(--secondary);
+        .total-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 5px;
         }
-        .hero-content p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            opacity: 0.9;
+        .total-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
         }
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .hero-image {
-            text-align: center;
-        }
-        .hero-image img {
-            max-width: 100%;
-            height: auto;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        .total-transfers {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 3px;
         }
 
-        .hero-stats {
-            display: flex;
-            gap: 30px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-        .stat-item {
-            text-align: center;
-        }
-        .stat-number {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--secondary);
-        }
-        .stat-label {
+        .account-list-title {
             font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             opacity: 0.8;
         }
 
-        /* Section Styles */
-        section {
-            padding: 80px 0;
-        }
-        .section-title {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        .section-title h2 {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 15px;
-        }
-        .section-title p {
-            color: var(--gray);
-            font-size: 18px;
-            max-width: 600px;
-            margin: 0 auto;
+        .account-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
         }
 
-        /* Features */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        .feature-card {
-            background: var(--white);
-            padding: 40px 30px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
+        .account-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 12px 15px;
+            cursor: pointer;
             transition: var(--transition);
-            border-top: 4px solid transparent;
+            border: 2px solid transparent;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
-            border-top-color: var(--secondary);
+
+        .account-item:hover {
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.2);
         }
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #e8f0fe, #d4e4fc);
+        .account-item.active {
+            background: rgba(0,102,204,0.3);
+            border-color: var(--primary);
+        }
+        .account-item.transferring {
+            animation: pulse-border 1.5s infinite;
+        }
+        .account-item.completed {
+            opacity: 0.7;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: var(--accent); box-shadow: 0 0 8px rgba(40,167,69,0.3); }
+            50% { border-color: var(--secondary); box-shadow: 0 0 20px rgba(255,107,53,0.5); }
+        }
+
+        .account-avatar {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 35px;
-            color: var(--primary);
-        }
-        .feature-card h3 {
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        /* Loan Steps */
-        .steps-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            position: relative;
-        }
-        .step-card {
-            background: var(--white);
-            padding: 40px 30px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-            position: relative;
-            transition: var(--transition);
-        }
-        .step-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-        .step-number {
-            width: 50px;
-            height: 50px;
-            background: var(--primary);
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
             font-weight: 700;
-            margin: 0 auto 20px;
-        }
-        .step-card h3 {
-            margin-bottom: 10px;
+            font-size: 16px;
+            flex-shrink: 0;
         }
 
-        /* Loan Packages */
-        .packages-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+        .account-info {
+            flex: 1;
+            min-width: 0;
         }
-        .package-card {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+        .account-name {
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
             overflow: hidden;
-            transition: var(--transition);
-            position: relative;
+            text-overflow: ellipsis;
         }
-        .package-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
+        .account-bank {
+            font-size: 11px;
+            opacity: 0.6;
         }
-        .package-card.featured {
-            border: 2px solid var(--secondary);
-            transform: scale(1.03);
-        }
-        .package-card.featured:hover {
-            transform: scale(1.03) translateY(-10px);
-        }
-        .package-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--secondary);
-            color: var(--white);
-            padding: 5px 15px;
+
+        .account-status {
+            font-size: 11px;
+            padding: 3px 8px;
             border-radius: 20px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .status-waiting {
+            background: rgba(255,193,7,0.2);
+            color: #ffc107;
+        }
+        .status-transferring {
+            background: rgba(0,102,204,0.2);
+            color: #4da6ff;
+            animation: blink 1s infinite;
+        }
+        .status-completed {
+            background: rgba(40,167,69,0.2);
+            color: #28a745;
+        }
+        .status-failed {
+            background: rgba(220,53,69,0.2);
+            color: #dc3545;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .main-header h2 {
+            font-size: 24px;
+            color: var(--dark);
+        }
+        .main-header h2 i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0fff4;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: live-pulse 1.2s infinite;
+        }
+        @keyframes live-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(40,167,69,0.6); }
+            50% { box-shadow: 0 0 0 12px rgba(40,167,69,0); }
+        }
+
+        /* Transfer Animation Area */
+        .transfer-visual {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .transfer-animation {
+            position: relative;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .sender-bank, .receiver-bank {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .bank-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--white);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+            position: relative;
+            z-index: 2;
+        }
+        .bank-label {
             font-size: 12px;
             font-weight: 600;
+            color: var(--gray);
         }
-        .package-header {
-            background: var(--primary);
-            color: var(--white);
-            padding: 30px;
-            text-align: center;
+
+        .transfer-path {
+            flex: 1;
+            position: relative;
+            height: 4px;
+            background: #dee2e6;
+            border-radius: 2px;
+            max-width: 200px;
         }
-        .package-header h3 {
-            font-size: 24px;
-            margin-bottom: 10px;
+        .money-particle {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: var(--accent);
+            animation: fly-money 1.5s infinite;
         }
-        .package-price {
-            font-size: 42px;
+        .money-particle:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        .money-particle:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes fly-money {
+            0% { left: 0; opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+        /* Current Transfer Details */
+        .current-transfer-card {
+            background: var(--white);
+            border: 2px solid #e9ecef;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .transfer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .transfer-header h3 {
+            font-size: 18px;
+            color: var(--dark);
+        }
+        .transfer-amount-display {
+            font-size: 36px;
             font-weight: 800;
-        }
-        .package-price small {
-            font-size: 16px;
-            font-weight: 400;
-        }
-        .package-body {
-            padding: 30px;
-        }
-        .package-body ul {
-            list-style: none;
-        }
-        .package-body ul li {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            color: var(--accent);
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .package-body ul li i {
-            color: var(--accent);
-        }
-        .package-body .btn-primary {
-            display: block;
-            text-align: center;
-            margin-top: 25px;
-        }
-
-        /* Contact Section */
-        .contact-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-        }
-        .contact-info {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--white);
-            padding: 50px 40px;
-        }
-        .contact-info h3 {
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        .contact-detail {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .contact-detail i {
-            font-size: 24px;
-            margin-top: 3px;
-            color: var(--secondary);
-        }
-        .contact-detail h4 {
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-        .contact-detail p {
-            opacity: 0.9;
-            font-size: 15px;
-        }
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        .social-links a {
-            width: 45px;
-            height: 45px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            text-decoration: none;
-            transition: var(--transition);
+        .transfer-amount-display .currency {
             font-size: 20px;
-        }
-        .social-links a:hover {
-            background: var(--secondary);
-            transform: translateY(-3px);
+            font-weight: 500;
+            color: var(--gray);
         }
 
-        .contact-form {
-            padding: 50px 40px;
-        }
-        .contact-form h3 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark);
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: var(--transition);
-            font-family: inherit;
-            background: #fafafa;
-        }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--white);
-            box-shadow: 0 0 0 4px rgba(0,102,204,0.1);
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-        .form-row {
+        .transfer-details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-
-        /* CTA Banner */
-        .cta-banner {
-            background: linear-gradient(135deg, var(--secondary), #e55a2b);
-            color: var(--white);
-            text-align: center;
-            padding: 60px 20px;
-            border-radius: var(--radius);
-            margin: 0 20px;
+        .detail-item {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 10px;
         }
-        .cta-banner h2 {
-            font-size: 36px;
-            margin-bottom: 15px;
+        .detail-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--gray);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
-        .cta-banner p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: var(--white);
-            padding: 60px 0 0;
-        }
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        .footer-col h4 {
-            font-size: 18px;
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 10px;
-        }
-        .footer-col h4::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: var(--secondary);
-        }
-        .footer-col ul {
-            list-style: none;
-        }
-        .footer-col ul li {
-            margin-bottom: 12px;
-        }
-        .footer-col ul li a {
-            color: #bbb;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        .footer-col ul li a:hover {
-            color: var(--secondary);
-            padding-left: 5px;
-        }
-        .footer-col p {
-            color: #bbb;
-            margin-bottom: 10px;
-        }
-        .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding: 20px 0;
-            text-align: center;
-            color: #bbb;
+        .detail-value {
+            font-weight: 600;
+            color: var(--dark);
             font-size: 14px;
         }
 
-        /* Back to Top */
-        .back-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: var(--primary);
-            color: var(--white);
-            border-radius: 50%;
+        /* Progress */
+        .transfer-progress-section {
+            margin-bottom: 25px;
+        }
+        .progress-steps {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            border: none;
-            font-size: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            justify-content: space-between;
+            margin-bottom: 10px;
         }
-        .back-to-top.show {
-            opacity: 1;
-            visibility: visible;
+        .progress-step {
+            text-align: center;
+            font-size: 11px;
+            color: var(--gray);
+            position: relative;
+            flex: 1;
         }
-        .back-to-top:hover {
-            background: var(--secondary);
-            transform: translateY(-3px);
+        .progress-step.active {
+            color: var(--primary);
+            font-weight: 600;
         }
-
-        /* Floating Contact Buttons */
-        .floating-contact {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 998;
+        .progress-step.completed {
+            color: var(--accent);
         }
-        .floating-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 24px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            transition: var(--transition);
-            text-decoration: none;
+        .progress-bar-container {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            transition: width 0.5s ease;
             position: relative;
         }
-        .floating-btn:hover {
-            transform: scale(1.1);
-        }
-        .floating-btn.zalo {
-            background: #0068ff;
-        }
-        .floating-btn.phone {
-            background: var(--accent);
-            animation: pulse 2s infinite;
-        }
-        .floating-btn.messenger {
-            background: #0084ff;
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(40,167,69,0.6); }
-            70% { box-shadow: 0 0 0 20px rgba(40,167,69,0); }
-            100% { box-shadow: 0 0 0 0 rgba(40,167,69,0); }
-        }
-        .tooltip-text {
+        .progress-bar::after {
+            content: '';
             position: absolute;
-            right: 65px;
-            background: var(--dark);
-            color: var(--white);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: var(--transition);
-        }
-        .floating-btn:hover .tooltip-text {
-            opacity: 1;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 10000;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Log */
+        .transfer-log {
+            background: #1a1a2e;
+            color: #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+        .log-entry {
+            display: flex;
+            gap: 8px;
+        }
+        .log-time {
+            color: #ffc107;
+            white-space: nowrap;
+        }
+        .log-msg {
+            color: #00ff88;
+        }
+        .log-amount {
+            color: #4da6ff;
+            font-weight: bold;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
             display: flex;
             align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
+            gap: 8px;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .btn-start {
+            background: var(--accent);
+            color: white;
         }
-        .modal {
-            background: var(--white);
-            border-radius: var(--radius);
-            padding: 40px;
-            max-width: 500px;
-            width: 90%;
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
+        .btn-start:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.4);
         }
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
+        .btn-pause {
+            background: #ffc107;
+            color: var(--dark);
+        }
+        .btn-pause:hover {
+            background: #e0a800;
+        }
+        .btn-reset {
+            background: var(--gray);
+            color: white;
+        }
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Speed Control */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        .speed-control label {
+            font-size: 13px;
+            font-weight: 600;
             color: var(--gray);
         }
-        .modal h3 {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 24px;
+        .speed-control select {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--white);
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideInRight 0.4s ease, slideOutRight 0.4s ease 3s forwards;
+            box-shadow: 0 10px 30px rgba(40,167,69,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(120%); opacity: 0; }
         }
 
         /* Responsive */
-        @media (max-width: 992px) {
-            .hero .container {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-            .hero-image {
-                order: -1;
-            }
-            .hero-image img {
-                max-width: 300px;
-            }
-            .hero-stats {
-                justify-content: center;
-            }
-            .hero-buttons {
-                justify-content: center;
-            }
-            .contact-wrapper {
-                grid-template-columns: 1fr;
-            }
-        }
-
         @media (max-width: 768px) {
-            .nav-links {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 80%;
-                max-width: 350px;
-                height: 100vh;
-                background: var(--white);
-                flex-direction: column;
-                padding: 80px 30px;
-                gap: 25px;
-                box-shadow: var(--shadow-lg);
-                transition: var(--transition);
-                z-index: 1001;
-            }
-            .nav-links.active {
-                right: 0;
-            }
-            .hamburger {
-                display: flex;
-                z-index: 1002;
-            }
-            .hamburger.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-            .hamburger.active span:nth-child(2) {
-                opacity: 0;
-            }
-            .hamburger.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(5px, -5px);
-            }
-            .overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                z-index: 1000;
-                opacity: 0;
-                visibility: hidden;
-                transition: var(--transition);
-            }
-            .overlay.active {
-                opacity: 1;
-                visibility: visible;
-            }
-            .hero-content h1 {
-                font-size: 32px;
-            }
-            .form-row {
+            .transfer-system {
                 grid-template-columns: 1fr;
             }
-            .floating-contact {
-                bottom: 80px;
-                right: 15px;
+            .sidebar {
+                max-height: 300px;
             }
-            .back-to-top {
-                bottom: 20px;
-                right: 15px;
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
+            .transfer-details-grid {
+                grid-template-columns: 1fr;
             }
-        }
-
-        @media (max-width: 480px) {
-            section {
-                padding: 50px 0;
+            .transfer-animation {
+                gap: 20px;
             }
-            .hero {
-                padding: 50px 0;
-            }
-            .hero-content h1 {
-                font-size: 26px;
-            }
-            .stat-number {
-                font-size: 28px;
-            }
-            .section-title h2 {
-                font-size: 26px;
-            }
-            .package-card.featured {
-                transform: scale(1);
-            }
-            .package-card.featured:hover {
-                transform: scale(1) translateY(-10px);
+            .bank-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Preloader -->
-    <div class="preloader" id="preloader">
-        <div class="spinner"></div>
-    </div>
+    <!-- Toast Notification -->
+    <div id="toastContainer"></div>
 
-    <!-- Overlay for mobile menu -->
-    <div class="overlay" id="overlay"></div>
-
-    <!-- Header -->
-    <header>
-        <div class="header-top">
-            <div class="container">
-                <div>
-                    <i class="fas fa-clock"></i> Làm việc: 8:00 - 21:00 (T2-CN)
-                </div>
-                <div>
-                    <a href="tel:1900123456"><i class="fas fa-phone-alt"></i> 1900 123 456</a>
-                    <a href="mailto:info@moneyfast.vn"><i class="fas fa-envelope"></i> info@moneyfast.vn</a>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <nav class="navbar">
-                <a href="#" class="logo">
+    <!-- Transfer System -->
+    <div class="transfer-system">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
                     <i class="fas fa-coins"></i> Money<span>Fast</span>
-                </a>
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="#home" class="active">Trang Chủ</a></li>
-                    <li><a href="#features">Ưu Điểm</a></li>
-                    <li><a href="#packages">Gói Vay</a></li>
-                    <li><a href="#steps">Hướng Dẫn</a></li>
-                    <li><a href="#contact">Liên Hệ</a></li>
-                    <li><a href="#" class="btn-primary" id="btnApplyNow">Đăng Ký Vay Ngay</a></li>
-                </ul>
-                <div class="hamburger" id="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
                 </div>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Vay Tiền <span>Nhanh Chóng</span> - Giải Ngân Trong 15 Phút</h1>
-                <p>Thủ tục đơn giản, không cần thế chấp, lãi suất minh bạch. Nhận tiền ngay sau khi được duyệt hồ sơ.</p>
-                <div class="hero-buttons">
-                    <a href="#" class="btn-primary" id="btnHeroApply"><i class="fas fa-paper-plane"></i> Đăng Ký Vay Ngay</a>
-                    <a href="#contact" class="btn-outline" style="color: white; border-color: white;"><i class="fas fa-phone-alt"></i> Tư Vấn Miễn Phí</a>
-                </div>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <div class="stat-number" id="counter1">0</div>
-                        <div class="stat-label">Khách Hàng</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="counter2">0</div>
-                        <div class="stat-label">Tỉnh Thành</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="counter3">0</div>
-                        <div class="stat-label">Tỷ Đồng Giải Ngân</div>
-                    </div>
-                </div>
+                <p style="font-size: 12px; opacity: 0.7;">Hệ Thống Chuyển Tiền Tự Động</p>
             </div>
-            <div class="hero-image">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 400'%3E%3Crect width='500' height='400' fill='%231a1a2e'/%3E%3Ccircle cx='250' cy='180' r='120' fill='%23ff6b35' opacity='0.8'/%3E%3Ccircle cx='250' cy='180' r='90' fill='%23ffffff'/%3E%3Ctext x='250' y='175' text-anchor='middle' font-size='60' fill='%230066cc'%3E$%3C/text%3E%3Crect x='200' y='310' width='100' height='40' rx='20' fill='%230066cc'/%3E%3Ctext x='250' y='338' text-anchor='middle' font-size='18' fill='white'%3EVay Ngay%3C/text%3E%3C/svg%3E" alt="Vay tiền nhanh MoneyFast" width="450" height="360">
+
+            <div class="total-transfer-info">
+                <div class="total-label">Tổng Tiền Đã Chuyển</div>
+                <div class="total-amount" id="totalAmount">0 ₫</div>
+                <div class="total-transfers" id="totalTransfers">0 giao dịch thành công</div>
+            </div>
+
+            <div class="account-list-title">
+                <i class="fas fa-list-ul"></i> Danh Sách Nhận Tiền
+            </div>
+
+            <div class="account-list" id="accountList">
+                <!-- Dynamic accounts will be inserted here -->
+            </div>
+
+            <div style="margin-top: 15px; font-size: 11px; opacity: 0.5; text-align: center;">
+                <i class="fas fa-shield-alt"></i> Bảo mật & Mã hóa SSL
             </div>
         </div>
-    </section>
 
-    <!-- Features Section -->
-    <section id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>Tại Sao Chọn MoneyFast?</h2>
-                <p>Chúng tôi cam kết mang đến dịch vụ vay tiền tốt nhất cho bạn</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                    <h3>Duyệt Hồ Sơ Nhanh</h3>
-                    <p>Hệ thống xét duyệt tự động, kết quả chỉ trong 15-30 phút sau khi nộp hồ sơ.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-                    <h3>Bảo Mật Tuyệt Đối</h3>
-                    <p>Thông tin cá nhân được mã hóa và bảo mật tuyệt đối, không chia sẻ với bên thứ ba.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-percent"></i></div>
-                    <h3>Lãi Suất Cạnh Tranh</h3>
-                    <p>Lãi suất chỉ từ 1.2%/tháng, minh bạch, không phí ẩn, không phát sinh.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
-                    <h3>Thủ Tục Đơn Giản</h3>
-                    <p>Chỉ cần CMND/CCCD, không cần chứng minh thu nhập, không thẩm định tại nhà.</p>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="main-header">
+                <h2><i class="fas fa-exchange-alt"></i> Chuyển Tiền Từng Giây</h2>
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    <span id="liveStatus">Sẵn Sàng</span>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Loan Packages -->
-    <section id="packages" style="background: #f0f4f8;">
-        <div class="container">
-            <div class="section-title">
-                <h2>Gói Vay Phổ Biến</h2>
-                <p>Lựa chọn gói vay phù hợp với nhu cầu của bạn</p>
-            </div>
-            <div class="packages-grid">
-                <div class="package-card">
-                    <div class="package-header">
-                        <h3>Gói Cơ Bản</h3>
-                        <div class="package-price">10-30 <small>Triệu</small></div>
-                    </div>
-                    <div class="package-body">
-                        <ul>
-                            <li><i class="fas fa-check-circle"></i> Lãi suất: 1.5%/tháng</li>
-                            <li><i class="fas fa-check-circle"></i> Kỳ hạn: 3-6 tháng</li>
-                            <li><i class="fas fa-check-circle"></i> Không cần thế chấp</li>
-                            <li><i class="fas fa-check-circle"></i> Giải ngân trong 30 phút</li>
-                            <li><i class="fas fa-check-circle"></i> Hỗ trợ 24/7</li>
-                        </ul>
-                        <a href="#" class="btn-outline" style="display: block; text-align: center;">Chọn Gói</a>
-                    </div>
-                </div>
-                <div class="package-card featured">
-                    <div class="package-badge">Phổ Biến Nhất</div>
-                    <div class="package-header" style="background: var(--secondary);">
-                        <h3>Gói Tiêu Chuẩn</h3>
-                        <div class="package-price">30-70 <small>Triệu</small></div>
-                    </div>
-                    <div class="package-body">
-                        <ul>
-                            <li><i class="fas fa-check-circle"></i> Lãi suất: 1.2%/tháng</li>
-                            <li><i class="fas fa-check-circle"></i> Kỳ hạn: 6-12 tháng</li>
-                            <li><i class="fas fa-check-circle"></i> Không cần thế chấp</li>
-                            <li><i class="fas fa-check-circle"></i> Giải ngân trong 15 phút</li>
-                            <li><i class="fas fa-check-circle"></i> Hỗ trợ 24/7</li>
-                            <li><i class="fas fa-check-circle"></i> Ưu đãi khách hàng thân thiết</li>
-                        </ul>
-                        <a href="#" class="btn-primary" style="display: block; text-align: center;">Đăng Ký Ngay</a>
-                    </div>
-                </div>
-                <div class="package-card">
-                    <div class="package-header" style="background: var(--dark);">
-                        <h3>Gói Cao Cấp</h3>
-                        <div class="package-price">70-150 <small>Triệu</small></div>
-                    </div>
-                    <div class="package-body">
-                        <ul>
-                            <li><i class="fas fa-check-circle"></i> Lãi suất: 1.0%/tháng</li>
-                            <li><i class="fas fa-check-circle"></i> Kỳ hạn: 12-24 tháng</li>
-                            <li><i class="fas fa-check-circle"></i> Hạn mức cao</li>
-                            <li><i class="fas fa-check-circle"></i> Giải ngân trong 15 phút</li>
-                            <li><i class="fas fa-check-circle"></i> Hỗ trợ 24/7</li>
-                            <li><i class="fas fa-check-circle"></i> Tư vấn riêng</li>
-                        </ul>
-                        <a href="#" class="btn-outline" style="display: block; text-align: center;">Chọn Gói</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Steps Section -->
-    <section id="steps">
-        <div class="container">
-            <div class="section-title">
-                <h2>4 Bước Vay Tiền Đơn Giản</h2>
-                <p>Quy trình vay tiền nhanh chóng, dễ dàng</p>
-            </div>
-            <div class="steps-container">
-                <div class="step-card">
-                    <div class="step-number">01</div>
-                    <h3>Đăng Ký Online</h3>
-                    <p>Điền form đăng ký trực tuyến với thông tin cơ bản. Chỉ mất 2 phút.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">02</div>
-                    <h3>Xác Nhận Thông Tin</h3>
-                    <p>Nhân viên gọi điện xác nhận và tư vấn gói vay phù hợp nhất.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">03</div>
-                    <h3>Xét Duyệt Hồ Sơ</h3>
-                    <p>Hệ thống tự động xét duyệt trong 15-30 phút, tỷ lệ duyệt lên đến 95%.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">04</div>
-                    <h3>Nhận Tiền Ngay</h3>
-                    <p>Tiền được chuyển khoản trực tiếp vào tài khoản ngân hàng của bạn.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact">
-        <div class="container">
-            <div class="section-title">
-                <h2>Liên Hệ Với Chúng Tôi</h2>
-                <p>Để lại thông tin, chúng tôi sẽ liên hệ tư vấn miễn phí trong 5 phút</p>
-            </div>
-            <div class="contact-wrapper">
-                <div class="contact-info">
-                    <h3>Thông Tin Liên Hệ</h3>
-                    <p style="margin-bottom: 30px; opacity: 0.9;">Hãy liên hệ với chúng tôi để được tư vấn gói vay phù hợp nhất. Đội ngũ chuyên viên sẵn sàng hỗ trợ 24/7.</p>
-
-                    <div class="contact-detail">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <h4>Địa Chỉ</h4>
-                            <p>Tầng 15, Tòa nhà Landmark 81, 720A Điện Biên Phủ, P.22, Q.Bình Thạnh, TP.HCM</p>
+            <!-- Transfer Animation -->
+            <div class="transfer-visual">
+                <div class="transfer-animation">
+                    <div class="sender-bank">
+                        <div class="bank-icon">
+                            <i class="fas fa-building-columns"></i>
                         </div>
+                        <span class="bank-label">MoneyFast Bank</span>
                     </div>
-
-                    <div class="contact-detail">
-                        <i class="fas fa-phone-alt"></i>
-                        <div>
-                            <h4>Hotline</h4>
-                            <p>1900 123 456 - 0987 654 321</p>
-                        </div>
+                    <div class="transfer-path">
+                        <span class="money-particle">💸</span>
+                        <span class="money-particle">💰</span>
+                        <span class="money-particle">💵</span>
                     </div>
-
-                    <div class="contact-detail">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h4>Email</h4>
-                            <p>info@moneyfast.vn</p>
-                            <p>support@moneyfast.vn</p>
+                    <div class="receiver-bank">
+                        <div class="bank-icon" id="receiverBankIcon">
+                            <i class="fas fa-user"></i>
                         </div>
+                        <span class="bank-label" id="receiverBankLabel">--</span>
                     </div>
-
-                    <div class="contact-detail">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <h4>Giờ Làm Việc</h4>
-                            <p>Thứ 2 - Chủ Nhật: 8:00 - 21:00</p>
-                            <p>Hỗ trợ online 24/7</p>
-                        </div>
-                    </div>
-
-                    <div class="social-links">
-                        <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" title="Zalo"><i class="fas fa-comment"></i></a>
-                        <a href="#" title="Messenger"><i class="fab fa-facebook-messenger"></i></a>
-                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-
-                <div class="contact-form">
-                    <h3>Đăng Ký Tư Vấn</h3>
-                    <p style="color: var(--gray); margin-bottom: 25px;">Điền form bên dưới, chúng tôi sẽ gọi lại trong 5 phút</p>
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <label for="fullname">Họ và Tên *</label>
-                            <input type="text" id="fullname" placeholder="Nhập họ và tên của bạn" required>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="phone">Số Điện Thoại *</label>
-                                <input type="tel" id="phone" placeholder="Nhập số điện thoại" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="email" id="email" placeholder="Nhập email (nếu có)">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="amount">Số Tiền Muốn Vay *</label>
-                            <select id="amount" required>
-                                <option value="">Chọn số tiền</option>
-                                <option value="10-20">10 - 20 Triệu</option>
-                                <option value="20-50">20 - 50 Triệu</option>
-                                <option value="50-100">50 - 100 Triệu</option>
-                                <option value="100-200">100 - 200 Triệu</option>
-                                <option value="200+">Trên 200 Triệu</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Ghi Chú</label>
-                            <textarea id="message" placeholder="Nhập ghi chú hoặc yêu cầu thêm..."></textarea>
-                        </div>
-                        <button type="submit" class="btn-primary" style="width: 100%; font-size: 18px; padding: 15px;">
-                            <i class="fas fa-paper-plane"></i> Gửi Đăng Ký
-                        </button>
-                    </form>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- CTA Banner -->
-    <section>
-        <div class="container">
-            <div class="cta-banner">
-                <h2>Bạn Cần Vay Tiền Gấp?</h2>
-                <p>Đăng ký ngay hôm nay để nhận ưu đãi giảm 0.5% lãi suất tháng đầu tiên!</p>
-                <a href="#" class="btn-primary" style="background: var(--white); color: var(--secondary); font-size: 18px;">
-                    <i class="fas fa-hand-pointer"></i> Nhận Ưu Đãi Ngay
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h4>MoneyFast</h4>
-                    <p>Dịch vụ vay tiền online uy tín hàng đầu Việt Nam. Thủ tục đơn giản, giải ngân nhanh chóng, lãi suất minh bạch.</p>
-                    <div class="social-links" style="margin-top: 15px;">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fas fa-comment"></i></a>
-                        <a href="#"><i class="fab fa-facebook-messenger"></i></a>
+            <!-- Current Transfer Card -->
+            <div class="current-transfer-card" id="currentTransferCard">
+                <div class="transfer-header">
+                    <h3><i class="fas fa-arrow-right"></i> Đang Chuyển Đến</h3>
+                    <div class="transfer-amount-display">
+                        <span class="currency">VNĐ</span>
+                        <span id="currentAmount">0</span>
                     </div>
                 </div>
-                <div class="footer-col">
-                    <h4>Dịch Vụ</h4>
-                    <ul>
-                        <li><a href="#">Vay tín chấp cá nhân</a></li>
-                        <li><a href="#">Vay tiêu dùng</a></li>
-                        <li><a href="#">Vay kinh doanh</a></li>
-                        <li><a href="#">Vay mua nhà</a></li>
-                        <li><a href="#">Vay mua xe</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Hỗ Trợ</h4>
-                    <ul>
-                        <li><a href="#">Câu hỏi thường gặp</a></li>
-                        <li><a href="#">Hướng dẫn vay</a></li>
-                        <li><a href="#">Điều khoản sử dụng</a></li>
-                        <li><a href="#">Chính sách bảo mật</a></li>
-                        <li><a href="#">Thanh toán khoản vay</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Liên Hệ</h4>
-                    <p><i class="fas fa-map-marker-alt"></i> Landmark 81, Q.Bình Thạnh, TP.HCM</p>
-                    <p><i class="fas fa-phone-alt"></i> 1900 123 456</p>
-                    <p><i class="fas fa-envelope"></i> info@moneyfast.vn</p>
-                    <p><i class="fas fa-clock"></i> 8:00 - 21:00 (T2-CN)</p>
+                <div class="transfer-details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Người Nhận</div>
+                        <div class="detail-value" id="detailName">--</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Số Tài Khoản</div>
+                        <div class="detail-value" id="detailAccount">--</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Ngân Hàng</div>
+                        <div class="detail-value" id="detailBank">--</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Trạng Thái</div>
+                        <div class="detail-value" id="detailStatus">Chờ xử lý</div>
+                    </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 MoneyFast. Tất cả quyền được bảo lưu. | Giấy phép ĐKKD số: 0123456789</p>
+
+            <!-- Progress -->
+            <div class="transfer-progress-section">
+                <div class="progress-steps">
+                    <span class="progress-step active" id="step1">Kết Nối</span>
+                    <span class="progress-step" id="step2">Xác Thực</span>
+                    <span class="progress-step" id="step3">Chuyển Tiền</span>
+                    <span class="progress-step" id="step4">Hoàn Tất</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+                </div>
             </div>
-        </div>
-    </footer>
 
-    <!-- Floating Contact Buttons -->
-    <div class="floating-contact">
-        <a href="tel:0987654321" class="floating-btn phone" title="Gọi điện">
-            <i class="fas fa-phone-alt"></i>
-            <span class="tooltip-text">Gọi: 0987 654 321</span>
-        </a>
-        <a href="https://zalo.me/0987654321" class="floating-btn zalo" title="Chat Zalo" target="_blank">
-            <i class="fas fa-comment"></i>
-            <span class="tooltip-text">Chat Zalo</span>
-        </a>
-        <a href="https://m.me/moneyfast" class="floating-btn messenger" title="Messenger" target="_blank">
-            <i class="fab fa-facebook-messenger"></i>
-            <span class="tooltip-text">Messenger</span>
-        </a>
-    </div>
-
-    <!-- Back to Top Button -->
-    <button class="back-to-top" id="backToTop" title="Lên đầu trang">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
-    <!-- Apply Modal -->
-    <div class="modal-overlay" id="applyModal">
-        <div class="modal">
-            <button class="modal-close" id="modalClose">&times;</button>
-            <h3>Đăng Ký Vay Nhanh</h3>
-            <form id="modalForm">
-                <div class="form-group">
-                    <label>Họ và Tên *</label>
-                    <input type="text" placeholder="Nhập họ và tên" required>
-                </div>
-                <div class="form-group">
-                    <label>Số Điện Thoại *</label>
-                    <input type="tel" placeholder="Nhập số điện thoại" required>
-                </div>
-                <div class="form-group">
-                    <label>Số Tiền Muốn Vay *</label>
-                    <select required>
-                        <option value="">Chọn số tiền</option>
-                        <option>10 - 20 Triệu</option>
-                        <option>20 - 50 Triệu</option>
-                        <option>50 - 100 Triệu</option>
-                        <option>100 - 200 Triệu</option>
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn btn-start" id="btnStart" onclick="startTransfer()">
+                    <i class="fas fa-play"></i> Bắt Đầu
+                </button>
+                <button class="btn btn-pause" id="btnPause" onclick="pauseTransfer()" disabled>
+                    <i class="fas fa-pause"></i> Tạm Dừng
+                </button>
+                <button class="btn btn-reset" id="btnReset" onclick="resetTransfer()">
+                    <i class="fas fa-redo"></i> Đặt Lại
+                </button>
+                <div class="speed-control">
+                    <label><i class="fas fa-tachometer-alt"></i> Tốc Độ:</label>
+                    <select id="speedSelect" onchange="changeSpeed()">
+                        <option value="2000">Chậm (2s)</option>
+                        <option value="1000" selected>Bình Thường (1s)</option>
+                        <option value="500">Nhanh (0.5s)</option>
+                        <option value="200">Siêu Nhanh (0.2s)</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-primary" style="width: 100%;">Gửi Đăng Ký</button>
-            </form>
+            </div>
+
+            <!-- Log -->
+            <div class="transfer-log" id="transferLog" style="margin-top: 15px;">
+                <div class="log-entry">
+                    <span class="log-time">[00:00:00]</span>
+                    <span class="log-msg">🚀 Hệ thống sẵn sàng. Nhấn "Bắt Đầu" để chuyển tiền.</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
     <script>
-        // Preloader
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('preloader').classList.add('hidden');
-            }, 500);
-        });
+        // ==================== DATA ====================
+        // Danh sách tài khoản nhận tiền
+        const accountList = [
+            { id: 1, name: 'Nguyễn Văn An', account: '1903 4567 8901', bank: 'Vietcombank', avatar: 'NA', amount: 5000000 },
+            { id: 2, name: 'Trần Thị Bình', account: '0123 4567 8901', bank: 'BIDV', avatar: 'TB', amount: 3500000 },
+            { id: 3, name: 'Lê Văn Cường', account: '8888 9999 0000', bank: 'Techcombank', avatar: 'LC', amount: 7800000 },
+            { id: 4, name: 'Phạm Thị Dung', account: '1234 5678 9012', bank: 'Agribank', avatar: 'PD', amount: 2200000 },
+            { id: 5, name: 'Hoàng Văn Em', account: '5678 9012 3456', bank: 'MB Bank', avatar: 'HE', amount: 9500000 },
+            { id: 6, name: 'Vũ Thị Phương', account: '9012 3456 7890', bank: 'ACB', avatar: 'VP', amount: 4100000 },
+            { id: 7, name: 'Đặng Văn Giang', account: '3456 7890 1234', bank: 'Sacombank', avatar: 'DG', amount: 6700000 },
+            { id: 8, name: 'Bùi Thị Hương', account: '7890 1234 5678', bank: 'VPBank', avatar: 'BH', amount: 1800000 },
+        ];
 
-        // Mobile Menu Toggle
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        const overlay = document.getElementById('overlay');
+        // ==================== STATE ====================
+        let currentIndex = 0;
+        let transferInterval = null;
+        let isRunning = false;
+        let totalTransferred = 0;
+        let successCount = 0;
+        let transferSpeed = 1000; // ms
 
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-            overlay.classList.toggle('active');
-        });
+        // ==================== DOM ELEMENTS ====================
+        const accountListEl = document.getElementById('accountList');
+        const totalAmountEl = document.getElementById('totalAmount');
+        const totalTransfersEl = document.getElementById('totalTransfers');
+        const currentAmountEl = document.getElementById('currentAmount');
+        const detailNameEl = document.getElementById('detailName');
+        const detailAccountEl = document.getElementById('detailAccount');
+        const detailBankEl = document.getElementById('detailBank');
+        const detailStatusEl = document.getElementById('detailStatus');
+        const progressBarEl = document.getElementById('progressBar');
+        const transferLogEl = document.getElementById('transferLog');
+        const liveStatusEl = document.getElementById('liveStatus');
+        const receiverBankLabel = document.getElementById('receiverBankLabel');
+        const btnStart = document.getElementById('btnStart');
+        const btnPause = document.getElementById('btnPause');
+        const btnReset = document.getElementById('btnReset');
+        const toastContainer = document.getElementById('toastContainer');
 
-        overlay.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navLinks.classList.remove('active');
-            overlay.classList.remove('active');
-        });
+        // Progress steps
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
 
-        // Close menu when clicking a link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('active');
-                overlay.classList.remove('active');
+        // ==================== INITIALIZE ====================
+        function initAccountList() {
+            accountListEl.innerHTML = '';
+            accountList.forEach((acc, index) => {
+                const item = document.createElement('div');
+                item.className = 'account-item';
+                item.id = `account-${acc.id}`;
+                item.innerHTML = `
+                    <div class="account-avatar">${acc.avatar}</div>
+                    <div class="account-info">
+                        <div class="account-name">${acc.name}</div>
+                        <div class="account-bank">${acc.bank} - ${acc.account}</div>
+                    </div>
+                    <span class="account-status status-waiting" id="status-${acc.id}">Chờ</span>
+                `;
+                item.addEventListener('click', () => highlightAccount(acc.id));
+                accountListEl.appendChild(item);
             });
-        });
+            highlightAccount(accountList[0].id);
+        }
 
-        // Back to Top Button
-        const backToTop = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 500) {
-                backToTop.classList.add('show');
-            } else {
-                backToTop.classList.remove('show');
+        function highlightAccount(accountId) {
+            document.querySelectorAll('.account-item').forEach(item => item.classList.remove('active'));
+            const item = document.getElementById(`account-${accountId}`);
+            if (item) item.classList.add('active');
+        }
+
+        function updateCurrentDisplay(account) {
+            currentAmountEl.textContent = account.amount.toLocaleString('vi-VN');
+            detailNameEl.textContent = account.name;
+            detailAccountEl.textContent = account.account;
+            detailBankEl.textContent = account.bank;
+            detailStatusEl.textContent = 'Đang chuyển...';
+            receiverBankLabel.textContent = account.bank;
+            document.getElementById('receiverBankIcon').innerHTML = '<i class="fas fa-user-check"></i>';
+        }
+
+        // ==================== LOGGING ====================
+        function addLog(message, type = 'info') {
+            const now = new Date();
+            const time = now.toLocaleTimeString('vi-VN', { hour12: false });
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-msg">${message}</span>
+            `;
+            transferLogEl.appendChild(logEntry);
+            transferLogEl.scrollTop = transferLogEl.scrollHeight;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 3400);
+        }
+
+        // ==================== UPDATE STATUS ====================
+        function updateAccountStatus(accountId, status) {
+            const statusEl = document.getElementById(`status-${accountId}`);
+            const accountItem = document.getElementById(`account-${accountId}`);
+            if (!statusEl || !accountItem) return;
+
+            // Remove all status classes
+            statusEl.classList.remove('status-waiting', 'status-transferring', 'status-completed', 'status-failed');
+            accountItem.classList.remove('transferring', 'completed');
+
+            switch (status) {
+                case 'transferring':
+                    statusEl.classList.add('status-transferring');
+                    statusEl.textContent = 'Đang chuyển';
+                    accountItem.classList.add('transferring');
+                    break;
+                case 'completed':
+                    statusEl.classList.add('status-completed');
+                    statusEl.textContent = '✅ Xong';
+                    accountItem.classList.add('completed');
+                    break;
+                case 'failed':
+                    statusEl.classList.add('status-failed');
+                    statusEl.textContent = '❌ Lỗi';
+                    break;
+                default:
+                    statusEl.classList.add('status-waiting');
+                    statusEl.textContent = 'Chờ';
             }
-        });
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        }
 
-        // Smooth Scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                if (href === '#') return;
-                e.preventDefault();
-                const target = document.querySelector(href);
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
+        function updateProgress(percent) {
+            progressBarEl.style.width = percent + '%';
+            // Update steps
+            step1.className = 'progress-step completed';
+            step2.className = 'progress-step ' + (percent >= 30 ? 'completed' : percent >= 10 ? 'active' : '');
+            step3.className = 'progress-step ' + (percent >= 60 ? 'completed' : percent >= 30 ? 'active' : '');
+            step4.className = 'progress-step ' + (percent >= 90 ? 'completed' : percent >= 60 ? 'active' : '');
+        }
 
-        // Counter Animation
-        function animateCounter(id, target, duration) {
-            const element = document.getElementById(id);
-            let start = 0;
-            const increment = target / (duration / 16);
-
-            function update() {
-                start += increment;
-                if (start < target) {
-                    element.textContent = Math.floor(start).toLocaleString() + '+';
-                    requestAnimationFrame(update);
-                } else {
-                    element.textContent = target.toLocaleString() + '+';
-                }
+        // ==================== TRANSFER LOGIC ====================
+        function processTransfer() {
+            if (currentIndex >= accountList.length) {
+                finishAllTransfers();
+                return;
             }
-            update();
+
+            const account = accountList[currentIndex];
+            highlightAccount(account.id);
+            updateCurrentDisplay(account);
+            updateAccountStatus(account.id, 'transferring');
+            detailStatusEl.textContent = 'Đang chuyển...';
+            liveStatusEl.textContent = 'ĐANG CHUYỂN';
+            document.querySelector('.live-dot').style.background = '#ffc107';
+
+            // Simulate transfer progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15 + 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    completeTransfer(account);
+                }
+                updateProgress(progress);
+            }, transferSpeed / 10);
         }
 
-        // Intersection Observer for counters
-        const observerOptions = { threshold: 0.5 };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounter('counter1', 50000, 2000);
-                    animateCounter('counter2', 63, 1500);
-                    animateCounter('counter3', 500, 2000);
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
+        function completeTransfer(account) {
+            totalTransferred += account.amount;
+            successCount++;
+            updateAccountStatus(account.id, 'completed');
+            detailStatusEl.textContent = '✅ Hoàn tất';
+            updateProgress(100);
+            liveStatusEl.textContent = 'CHUYỂN TIẾP';
+            document.querySelector('.live-dot').style.background = '#28a745';
 
-        const statSection = document.querySelector('.hero-stats');
-        if (statSection) observer.observe(statSection);
+            // Update totals
+            totalAmountEl.textContent = totalTransferred.toLocaleString('vi-VN') + ' ₫';
+            totalTransfersEl.textContent = successCount + ' giao dịch thành công';
 
-        // Modal
-        const applyModal = document.getElementById('applyModal');
-        const modalClose = document.getElementById('modalClose');
-        const btnApplyNow = document.getElementById('btnApplyNow');
-        const btnHeroApply = document.getElementById('btnHeroApply');
+            addLog(`✅ Chuyển <span class="log-amount">${account.amount.toLocaleString('vi-VN')} ₫</span> đến <b>${account.name}</b> - STK: ${account.account} (${account.bank})`);
+            showToast(`Đã chuyển ${account.amount.toLocaleString('vi-VN')} ₫ đến ${account.name}`);
 
-        function openModal() {
-            applyModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeModal() {
-            applyModal.classList.remove('active');
-            document.body.style.overflow = '';
+            // Move to next account
+            currentIndex++;
+            updateProgress(0);
+
+            if (currentIndex < accountList.length && isRunning) {
+                setTimeout(() => processTransfer(), 500);
+            } else if (currentIndex >= accountList.length) {
+                finishAllTransfers();
+            }
         }
 
-        btnApplyNow.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
-        btnHeroApply.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
-        modalClose.addEventListener('click', closeModal);
-        applyModal.addEventListener('click', (e) => {
-            if (e.target === applyModal) closeModal();
-        });
+        function finishAllTransfers() {
+            stopTransfer();
+            updateProgress(100);
+            step1.className = 'progress-step completed';
+            step2.className = 'progress-step completed';
+            step3.className = 'progress-step completed';
+            step4.className = 'progress-step completed';
+            liveStatusEl.textContent = 'HOÀN TẤT';
+            document.querySelector('.live-dot').style.background = '#28a745';
+            detailStatusEl.textContent = '✅ Tất cả đã hoàn tất';
+            currentAmountEl.textContent = '0';
+            detailNameEl.textContent = '--';
+            detailAccountEl.textContent = '--';
+            detailBankEl.textContent = '--';
+            receiverBankLabel.textContent = '--';
+            document.getElementById('receiverBankIcon').innerHTML = '<i class="fas fa-check-circle"></i>';
+            document.querySelectorAll('.account-item').forEach(item => item.classList.remove('active'));
+            addLog('🏁 <b>TẤT CẢ GIAO DỊCH ĐÃ HOÀN TẤT!</b> Tổng: ' + totalTransferred.toLocaleString('vi-VN') + ' ₫');
+            showToast('🎉 Tất cả giao dịch đã hoàn tất!');
+            btnStart.disabled = true;
+            btnPause.disabled = true;
+        }
 
-        // Form Submissions
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Cảm ơn bạn đã đăng ký! Chúng tôi sẽ liên hệ trong 5 phút.');
-            this.reset();
-        });
+        // ==================== CONTROLS ====================
+        function startTransfer() {
+            if (isRunning) return;
+            if (currentIndex >= accountList.length) {
+                currentIndex = 0;
+                totalTransferred = 0;
+                successCount = 0;
+                totalAmountEl.textContent = '0 ₫';
+                totalTransfersEl.textContent = '0 giao dịch thành công';
+                accountList.forEach(acc => updateAccountStatus(acc.id, 'waiting'));
+                transferLogEl.innerHTML = '';
+                addLog('🚀 Hệ thống khởi động lại...');
+            }
 
-        document.getElementById('modalForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Đăng ký thành công! Nhân viên sẽ gọi lại cho bạn ngay.');
-            this.reset();
-            closeModal();
-        });
+            isRunning = true;
+            btnStart.disabled = true;
+            btnPause.disabled = false;
+            liveStatusEl.textContent = 'ĐANG CHUYỂN';
+            document.querySelector('.live-dot').style.background = '#ffc107';
+            addLog('▶️ Bắt đầu chuyển tiền tự động từng giây...');
+            processTransfer();
+        }
 
-        // Active nav link on scroll
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('section[id]');
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                if (window.scrollY >= sectionTop) {
-                    current = section.getAttribute('id');
-                }
-            });
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                }
-            });
-        });
+        function pauseTransfer() {
+            if (!isRunning) return;
+            stopTransfer();
+            btnStart.disabled = false;
+            btnPause.disabled = true;
+            liveStatusEl.textContent = 'TẠM DỪNG';
+            document.querySelector('.live-dot').style.background = '#ffc107';
+            detailStatusEl.textContent = '⏸️ Tạm dừng';
+            addLog('⏸️ Đã tạm dừng chuyển tiền.');
+        }
+
+        function stopTransfer() {
+            isRunning = false;
+            if (transferInterval) {
+                clearInterval(transferInterval);
+                transferInterval = null;
+            }
+        }
+
+        function resetTransfer() {
+            stopTransfer();
+            currentIndex = 0;
+            totalTransferred = 0;
+            successCount = 0;
+            isRunning = false;
+
+            totalAmountEl.textContent = '0 ₫';
+            totalTransfersEl.textContent = '0 giao dịch thành công';
+            currentAmountEl.textContent = '0';
+            detailNameEl.textContent = '--';
+            detailAccountEl.textContent = '--';
+            detailBankEl.textContent = '--';
+            detailStatusEl.textContent = 'Chờ xử lý';
+            receiverBankLabel.textContent = '--';
+            document.getElementById('receiverBankIcon').innerHTML = '<i class="fas fa-user"></i>';
+            updateProgress(0);
+            step1.className = 'progress-step active';
+            step2.className = 'progress-step';
+            step3.className = 'progress-step';
+            step4.className = 'progress-step';
+            liveStatusEl.textContent = 'SẴN SÀNG';
+            document.querySelector('.live-dot').style.background = '#28a745';
+            btnStart.disabled = false;
+            btnPause.disabled = true;
+            document.querySelectorAll('.account-item').forEach(item => item.classList.remove('active', 'transferring', 'completed'));
+            accountList.forEach(acc => updateAccountStatus(acc.id, 'waiting'));
+            transferLogEl.innerHTML = '';
+            addLog('🔄 Hệ thống đã được đặt lại. Sẵn sàng chuyển tiền mới.');
+            highlightAccount(accountList[0].id);
+        }
+
+        function changeSpeed() {
+            transferSpeed = parseInt(document.getElementById('speedSelect').value);
+            addLog(`⚡ Tốc độ chuyển tiền: <b>${transferSpeed}ms</b>/giao dịch`);
+        }
+
+        // ==================== INIT ====================
+        initAccountList();
+        updateProgress(0);
+        addLog('🚀 Hệ thống sẵn sàng. Nhấn "Bắt Đầu" để chuyển tiền tự động từng giây.');
+        addLog(`📋 Tổng số tài khoản: <b>${accountList.length}</b> | Tổng tiền: <b>${accountList.reduce((sum, a) => sum + a.amount, 0).toLocaleString('vi-VN')} ₫</b>`);
     </script>
 </body>
 </html>
