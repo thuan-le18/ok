@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TIENBAN | Thanh Toán</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* ===== RESET & VARIABLES ===== */
+    :root {
+      --bg: #060608;
+      --panel: #111115;
+      --panel-2: #16161e;
+      --border: rgba(212, 175, 55, 0.15);
+      --border-active: rgba(212, 175, 55, 0.7);
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --gold-light: #fef08a;
+      --gold: #d4af37;
+      --danger: #ef4444;
+      --success: #31c48d;
+      --radius: 12px;
+      --shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1000px, calc(100% - 32px)); margin: 0 auto; }
+    .nav { backdrop-filter: blur(16px); background: rgba(6,6,8,0.85); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .nav-inner { height: 80px; display: flex; align-items: center; justify-content: space-between; }
+    .brand { font-size: 26px; font-weight: 900; letter-spacing: 0.05em; background: linear-gradient(180deg, var(--gold-light), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .nav-links { display: flex; gap: 32px; font-weight: 700; }
+    .container { padding: 40px 0 80px; }
+    .page-title { text-align: center; font-size: 32px; font-weight: 900; margin: 0 0 8px; }
+    .page-subtitle { text-align: center; color: var(--muted); font-size: 15px; margin: 0 0 32px; }
+    .gold { color: var(--gold); }
+    .notice-box { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: var(--radius); padding: 20px; margin-bottom: 32px; }
+    .notice-box h4 { margin: 0 0 10px; color: #f87171; font-size: 16px; }
+    .notice-box ul { margin: 0; padding-left: 20px; color: #d1d5db; font-size: 14px; line-height: 1.7; }
+
+    /* ===== PACKAGES & PRODUCTS ===== */
+    .items-section { margin-bottom: 40px; }
+    .packages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 40px; }
+    .package-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      text-align: center;
+      transition: all 0.25s ease;
+      box-shadow: var(--shadow);
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+    }
+    .package-card:hover { transform: translateY(-2px); border-color: rgba(212,175,55,0.3); }
+    .package-card h3 { margin: 0 0 4px; font-size: 22px; font-weight: 900; }
+    .package-card .label { font-size: 12px; color: var(--muted); font-weight: 700; margin-top: 6px; display: block; }
+    .package-card .price { font-size: 28px; font-weight: 900; color: var(--gold); margin: 4px 0 8px; }
+    .package-card .pkg-desc { color: var(--muted); font-size: 13px; margin-bottom: 8px; line-height: 1.5; max-height: 40px; overflow: hidden; transition: max-height 0.3s ease; }
+    .package-card .pkg-desc.expanded { max-height: 400px; }
+    .package-card .desc-toggle { color: var(--gold); font-size: 12px; font-weight: 700; cursor: pointer; background: none; border: none; padding: 4px 0; display: inline-block; }
+    .package-card .desc-toggle:hover { text-decoration: underline; }
+    .package-card .stock { font-size: 12px; color: var(--muted); margin: 6px 0 12px; }
+    .package-card .stock.out { color: var(--danger); }
+    .package-card .btn-group { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+    .package-card .btn-group .btn { flex: 1; min-width: 60px; padding: 10px 12px; font-size: 14px; }
+    .package-card .btn-group .btn-img { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 10px 8px; flex: 0 1 auto; }
+    .package-card .btn-group .btn-img:hover { border-color: var(--gold); color: #fff; }
+
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    .item-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: default;
+      box-shadow: var(--shadow);
+    }
+    .item-card:hover { transform: translateY(-3px); border-color: rgba(212,175,55,0.3); }
+    .item-card .img-wrap {
+      width: 100%;
+      height: 300px;
+      background: #0a0a0f;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .item-card .img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .item-card .img-wrap:hover img { transform: scale(1.04); }
+    .item-card .body { padding: 16px 18px 20px; }
+    .item-card .body h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-card .body .desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      height: 40px;
+      margin-bottom: 8px;
+    }
+    .item-card .body .price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .item-card .body .price {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    .item-card .body .stock {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .item-card .body .stock.out { color: var(--danger); }
+    .item-card .body .btn-small {
+      padding: 8px 20px;
+      font-size: 13px;
+      background: linear-gradient(180deg, #fef08a, var(--gold));
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .item-card .body .btn-small:hover:not(:disabled) { transform: scale(1.02); filter: brightness(1.05); }
+    .item-card .body .btn-small:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.5); }
+
+    /* ===== LIGHTBOX ===== */
+    .lightbox-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .lightbox-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+    .lightbox-overlay .lightbox-img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      transform: scale(0.85);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+      opacity: 0;
+      object-fit: contain;
+    }
+    .lightbox-overlay.active .lightbox-img {
+      transform: scale(1);
+      opacity: 1;
+    }
+    .lightbox-close {
+      position: fixed;
+      top: 30px;
+      right: 40px;
+      font-size: 38px;
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-close:hover {
+      background: rgba(255,255,255,0.2);
+      transform: rotate(90deg);
+    }
+
+    /* ===== MODAL ĐẶT HÀNG (cho sản phẩm) ===== */
+    .order-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 9998;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.2s ease;
+    }
+    .order-modal-overlay.active { display: flex; }
+    .order-modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      max-width: 440px;
+      width: 90%;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.3s ease;
+    }
+    .order-modal h3 { color: var(--gold-light); font-size: 20px; margin-bottom: 12px; }
+    .order-modal .product-name { color: #fff; font-weight: 700; margin-bottom: 16px; font-size: 16px; }
+    .order-modal .form-group { margin-bottom: 16px; }
+    .order-modal .form-group label { display: block; color: var(--muted); font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+    .order-modal .form-group input, .order-modal .form-group textarea {
+      width: 100%; background: #090b10; color: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px;
+    }
+    .order-modal .form-group textarea { min-height: 60px; resize: vertical; }
+    .order-modal .payment-method-select { display: flex; gap: 12px; margin: 12px 0 16px; }
+    .order-modal .payment-method-select label {
+      flex: 1; background: #09090d; border: 2px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s; color: var(--muted); font-weight: 700; font-size: 14px;
+    }
+    .order-modal .payment-method-select label.active { border-color: var(--gold); background: rgba(212,175,55,0.08); color: #fff; }
+    .order-modal .payment-method-select label:hover { border-color: rgba(212,175,55,0.4); }
+    .order-modal .payment-method-select input[type="radio"] { display: none; }
+    .order-modal .total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 900; color: #fff; margin: 16px 0; border-top: 1px solid var(--border); padding-top: 16px; }
+    .order-modal .total .amount { color: var(--gold); }
+    .order-modal .actions { display: flex; gap: 12px; }
+    .order-modal .actions .btn { flex: 1; padding: 10px; font-size: 15px; }
+    .order-modal .actions .btn-cancel { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .order-modal .actions .btn-cancel:hover { background: rgba(255,255,255,0.03); }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===== FORM & CÁC THÀNH PHẦN KHÁC ===== */
+    .btn { display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 16px; transition: all 0.2s; padding: 14px 24px; text-align: center; width: 100%; }
+    .btn-gold { background: linear-gradient(180deg, #fef08a, var(--gold)); color: #000; }
+    .btn-gold:hover { filter: brightness(1.05); }
+    .btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+    .btn-copy { background: transparent; border: none; color: var(--muted); padding: 0 6px; font-size: 14px; cursor: pointer; transition: color 0.2s; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    .btn-copy:hover { color: var(--gold); }
+    .btn-copy.copied { color: var(--success); }
+    .copy-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .copy-wrapper .info-text { font-weight: 900; color: #fff; word-break: break-all; flex: 1; min-width: 60px; }
+    .main-form-section { max-width: 680px; margin: 0 auto; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 32px; box-shadow: var(--shadow); }
+    #order-form-panel { display: none; }
+    .panel-title { text-align: center; font-size: 24px; font-weight: 900; margin: 0 0 24px; }
+    .form-group { margin-bottom: 24px; position: relative; width: 100%; }
+    .form-label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; }
+    input[type="text"] { width: 100%; background: #09090d; color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); padding: 16px; font-size: 15px; font-family: inherit; outline: none; transition: border 0.2s; }
+    input[type="text"]:focus { border-color: var(--gold); }
+    .bank-selector-trigger { width: 100%; background: #09090d; color: var(--muted); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); padding: 16px; font-size: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; user-select: none; }
+    .bank-selector-trigger:hover { border-color: rgba(212,175,55,0.4); }
+    .bank-selector-trigger.open { border-color: var(--gold); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+    .bank-dropdown { display: none; width: 100%; background: #111115; border: 1px solid var(--gold); border-top: none; border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius); padding: 16px; position: absolute; top: 100%; left: 0; right: 0; z-index: 50; box-shadow: 0 15px 40px rgba(0,0,0,0.9); }
+    .bank-dropdown.show { display: block; }
+    .bank-search-wrap { margin-bottom: 16px; }
+    .bank-search-wrap input { width: 100%; padding: 12px 16px; border-radius: 8px; background: #1a1a24; border: 1px solid rgba(212,175,55,0.3); color: #fff; font-size: 14px; outline: none; }
+    .bank-search-wrap input:focus { border-color: var(--gold); }
+    .bank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 10px; max-height: 260px; overflow-y: auto; padding-right: 6px; }
+    .bank-grid::-webkit-scrollbar { width: 5px; }
+    .bank-grid::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 8px; }
+    .bank-grid::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.5); border-radius: 8px; }
+    .bank-grid::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+    .bank-item { background: #09090d; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; }
+    .bank-item:hover { border-color: rgba(212,175,55,0.5); background: #16161e; }
+    .bank-item.active { border-color: var(--gold); background: rgba(212,175,55,0.15); }
+    .bank-logo-wrap { height: 30px; width: 100%; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 6px; padding: 4px; box-sizing: border-box; }
+    .bank-logo-wrap img { max-height: 100%; max-width: 100%; object-fit: contain; }
+    .bank-name { font-size: 11px; font-weight: 700; margin-top: 8px; color: #e5e7eb; word-break: break-word; line-height: 1.3; }
+    .input-error { border-color: var(--danger) !important; background: rgba(239,68,68,0.05) !important; }
+    .error-msg { color: var(--danger); font-size: 14px; font-weight: 600; margin-top: 8px; display: none; }
+    .form-footer-links { text-align: center; margin-top: 16px; }
+    .form-footer-links a { font-size: 14px; color: var(--muted); font-weight: 600; text-decoration: underline; cursor: pointer; }
+    .payment-method-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .payment-option { background: #09090d; border: 2px solid rgba(255,255,255,0.08); border-radius: var(--radius); padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .payment-option:hover { border-color: rgba(212,175,55,0.3); }
+    .payment-option.active { border-color: var(--gold); background: rgba(212,175,55,0.08); }
+    .payment-option input[type="radio"] { display: none; }
+    .payment-option .label { font-weight: 800; font-size: 14px; color: #fff; }
+    .payment-option .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .payment-screen { display: none; text-align: center; }
+    .status-badge { color: var(--gold); font-size: 28px; font-weight: 900; margin: 0 0 6px; }
+    .warning-subtitle { color: var(--danger); font-size: 13px; font-weight: 700; letter-spacing: 0.05em; margin: 0 0 28px; animation: flash-danger 0.6s infinite alternate; }
+    .qr-card { background: #fff; padding: 16px; border-radius: 16px; display: inline-block; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .qr-card img { width: 200px; height: 200px; display: block; margin: 0 auto; }
+    .info-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; text-align: left; }
+    .info-block { background: #09090d; border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 16px; }
+    .info-block-flex { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .info-block span { font-size: 12px; color: var(--muted); font-weight: 700; display: block; margin-bottom: 4px; }
+    .info-block strong { font-size: 20px; font-weight: 900; color: #fff; word-break: break-all; }
+    .confirm-logo-box { width: 76px; height: 38px; background: #fff; border-radius: 6px; padding: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .confirm-logo-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
+    .usdt-address-box { background: #09090d; border: 1px solid var(--gold); border-radius: var(--radius); padding: 16px; margin: 20px 0; word-break: break-all; }
+    .usdt-address-box .label { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .usdt-address-box .address { color: #fff; font-size: 18px; font-weight: 900; margin-top: 8px; }
+    .qr-usdt-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .system-status-text { color: var(--gold); font-size: 14px; font-weight: 700; margin: 24px 0 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; animation: flash-system 1.2s infinite ease-in-out; }
+    .system-sub-desc { color: var(--muted); font-size: 13px; line-height: 1.6; max-width: 500px; margin: 0 auto 32px; }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(212,175,55,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes flash-danger { 0% { opacity: 1; } 100% { opacity: 0.2; } }
+    @keyframes flash-system { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    @media (max-width: 768px) {
+      .packages-grid { grid-template-columns: 1fr; }
+      .items-grid { grid-template-columns: 1fr; }
+      .info-row-grid { grid-template-columns: 1fr; gap: 12px; }
+      .panel { padding: 24px 16px; }
+      .bank-grid { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); }
+      .bank-dropdown { padding: 12px; }
+      .payment-method-group { grid-template-columns: 1fr; }
+      .qr-card img { width: 160px; height: 160px; }
+      .copy-wrapper .info-text { font-size: 16px; min-width: 40px; }
+      .btn-copy { font-size: 16px; padding: 0 8px; }
+      .lightbox-close { top: 20px; right: 20px; width: 48px; height: 48px; font-size: 30px; }
+      .order-modal { padding: 20px; }
+      .item-card .img-wrap { height: 200px; }
+      .package-card .pkg-desc { max-height: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="index.html">TIENBAN</a>
+    <nav class="nav-links"><a href="index.html">TRANG CHỦ</a></nav>
+  </div>
+</header>
+
+<main class="wrap container">
+  <!-- GÓI GIAO DỊCH -->
+  <div id="section-packages-wrapper" class="items-section">
+    <h2 class="page-title">📦 <span class="gold">Gói giao dịch</span></h2>
+    <p class="page-subtitle">Hệ thống thanh toán tự động 24/7 - Bảo mật.</p>
+    <div class="notice-box">
+      <h4>⚠️ LƯU Ý QUAN TRỌNG:</h4>
+      <ul>
+        <li>Kiểm tra thông tin của bạn khớp với thông tin đã gửi.</li>
+        <li>Mỗi ngân hàng chỉ có thể mua tối đa 60 triệu tiền bẩn trong 3 ngày.</li>
+        <li>Kiểm tra đúng đó là thông tin của bạn khi hệ thống duyệt không thể thu hồi.</li>
+      </ul>
+    </div>
+    <div id="packagesContainer" class="packages-grid">
+      <!-- Render bằng JS -->
+    </div>
+  </div>
+
+  <!-- SẢN PHẨM (dưới gói) -->
+  <div id="section-products-wrapper" class="items-section" style="display:none;">
+    <h2 class="page-title">🛒 <span class="gold">Mặt hàng</span></h2>
+    <p class="page-subtitle">Mua sắm các sản phẩm và dịch vụ</p>
+    <div id="productsContainer" class="items-grid">
+      <!-- Render bằng JS -->
+    </div>
+  </div>
+
+  <!-- MODAL ĐẶT HÀNG (cho sản phẩm) -->
+  <div class="order-modal-overlay" id="orderModal">
+    <div class="order-modal">
+      <h3>Đặt hàng</h3>
+      <div class="product-name" id="modalProductName">Sản phẩm: ...</div>
+      <div class="form-group">
+        <label>Số lượng</label>
+        <input type="number" id="modalQuantity" value="1" min="1" />
+      </div>
+      <div class="form-group">
+        <label>Ghi chú (nếu có)</label>
+        <textarea id="modalNote" placeholder="Ghi chú cho đơn hàng..."></textarea>
+      </div>
+      <div class="payment-method-select">
+        <label class="active" id="modalMethodUsdt">
+          <input type="radio" name="modalPaymentMethod" value="usdt" checked /> ₮ USDT
+        </label>
+        <label id="modalMethodBank">
+          <input type="radio" name="modalPaymentMethod" value="bank" /> 🏦 Ngân hàng
+        </label>
+      </div>
+      <div class="total">
+        <span>Tổng thanh toán:</span>
+        <span class="amount" id="modalTotal">0 VNĐ</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-cancel" id="modalCancel">Hủy</button>
+        <button class="btn btn-gold" id="modalConfirm">Xác nhận mua</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-form-section">
+    <!-- FORM (cho gói giao dịch) -->
+    <section class="panel" id="order-form-panel">
+      <h2 class="panel-title">Thông Tin Nhận Tiền</h2>
+      <div class="form-group">
+        <label class="form-label">SỐ TÀI KHOẢN NGÂN HÀNG</label>
+        <input type="text" id="input-account" placeholder="0123456789" />
+        <div class="error-msg" id="error-account">Số tài khoản không hợp lệ.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">TÊN CHÍNH CHỦ (VIẾT HOA KHÔNG DẤU)</label>
+        <input type="text" id="input-fullname" placeholder="NGUYEN VAN A" />
+        <div class="error-msg" id="error-fullname">Vui lòng nhập họ tên chủ tài khoản.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">LOẠI NGÂN HÀNG</label>
+        <div class="bank-selector-trigger" id="bank-selector-trigger">
+          <span id="selected-bank-text">Nhấp để chọn ngân hàng...</span>
+          <span class="arrow" style="font-size:12px; color:var(--gold);">▼</span>
+        </div>
+        <div class="bank-dropdown" id="bank-dropdown">
+          <div class="bank-search-wrap">
+            <input type="text" id="bank-search-input" placeholder="Tìm ngân hàng..." autocomplete="off" />
+          </div>
+          <div class="bank-grid" id="bank-grid">
+            <!-- Danh sách bank giữ nguyên -->
+            <div class="bank-item" data-code="MoMo"><div class="bank-logo-wrap"><img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Square-635x635.png" alt="MoMo" /></div><div class="bank-name">MoMo</div></div>
+            <div class="bank-item" data-code="ZaloPay"><div class="bank-logo-wrap"><img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square-635x635.png" alt="ZaloPay" /></div><div class="bank-name">ZaloPay</div></div>
+            <div class="bank-item" data-code="MBBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/MB.png" alt="MBBank" /></div><div class="bank-name">MBBank</div></div>
+            <div class="bank-item" data-code="Vietcombank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/VCB.png" alt="Vietcombank" /></div><div class="bank-name">VCB</div></div>
+            <div class="bank-item" data-code="VietinBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/ICB.png" alt="VietinBank" /></div><div class="bank-name">VietinBank</div></div>
+            <div class="bank-item" data-code="BIDV"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/BIDV.png" alt="BIDV" /></div><div class="bank-name">BIDV</div></div>
+            <div class="bank-item" data-code="Agribank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/VBA.png" alt="Agribank" /></div><div class="bank-name">Agribank</div></div>
+            <div class="bank-item" data-code="Techcombank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/TCB.png" alt="Techcombank" /></div><div class="bank-name">TCB</div></div>
+            <div class="bank-item" data-code="ACB"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/ACB.png" alt="ACB" /></div><div class="bank-name">ACB</div></div>
+            <div class="bank-item" data-code="VPBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/VPB.png" alt="VPBank" /></div><div class="bank-name">VPBank</div></div>
+            <div class="bank-item" data-code="Sacombank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/STB.png" alt="Sacombank" /></div><div class="bank-name">Sacombank</div></div>
+            <div class="bank-item" data-code="TPBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/TPB.png" alt="TPBank" /></div><div class="bank-name">TPBank</div></div>
+            <div class="bank-item" data-code="HDBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/HDB.png" alt="HDBank" /></div><div class="bank-name">HDBank</div></div>
+            <div class="bank-item" data-code="VIB"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/VIB.png" alt="VIB" /></div><div class="bank-name">VIB</div></div>
+            <div class="bank-item" data-code="OCB"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/OCB.png" alt="OCB" /></div><div class="bank-name">OCB</div></div>
+            <div class="bank-item" data-code="SHB"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/SHB.png" alt="SHB" /></div><div class="bank-name">SHB</div></div>
+            <div class="bank-item" data-code="SeABank"><div class="bank-logo-wrap"><img src="https://images.seeklogo.com/logo-png/54/1/sea-bank-logo-png_seeklogo-541364.png" alt="SeABank" /></div><div class="bank-name">SeABank</div></div>
+            <div class="bank-item" data-code="MSB"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/MSB.png" alt="MSB" /></div><div class="bank-name">MSB</div></div>
+            <div class="bank-item" data-code="Eximbank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/EIB.png" alt="Eximbank" /></div><div class="bank-name">Eximbank</div></div>
+            <div class="bank-item" data-code="LPBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/LPB.png" alt="LPBank" /></div><div class="bank-name">LPBank</div></div>
+            <div class="bank-item" data-code="NamABank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/NAB.png" alt="NamABank" /></div><div class="bank-name">Nam A Bank</div></div>
+            <div class="bank-item" data-code="NCB"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/NCB.png" alt="NCB" /></div><div class="bank-name">NCB</div></div>
+            <div class="bank-item" data-code="SCB"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/SCB.png" alt="SCB" /></div><div class="bank-name">SCB</div></div>
+            <div class="bank-item" data-code="BacABank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/BAB.png" alt="BacABank" /></div><div class="bank-name">Bac A Bank</div></div>
+            <div class="bank-item" data-code="DongABank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/DOB.png" alt="DongABank" /></div><div class="bank-name">DongA Bank</div></div>
+            <div class="bank-item" data-code="Kienlong"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/KLB.png" alt="Kienlongbank" /></div><div class="bank-name">Kienlongbank</div></div>
+            <div class="bank-item" data-code="BVBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/BVB.png" alt="BVBank" /></div><div class="bank-name">BVBank</div></div>
+            <div class="bank-item" data-code="Oceanbank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/OCEANBANK.png" alt="Oceanbank" /></div><div class="bank-name">Oceanbank</div></div>
+            <div class="bank-item" data-code="GPBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/GPB.png" alt="GPBank" /></div><div class="bank-name">GPBank</div></div>
+            <div class="bank-item" data-code="CBBank"><div class="bank-logo-wrap"><img src="https://api.vietqr.io/img/CBB.png" alt="CBBank" /></div><div class="bank-name">CBBank</div></div>
+          </div>
+        </div>
+        <div class="error-msg" id="error-bank">Vui lòng chọn ngân hàng hoặc ví.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">TELEGRAM (LIÊN HỆ)</label>
+        <input type="text" id="input-telegram" placeholder="@username" />
+        <div class="error-msg" id="error-telegram">Vui lòng nhập Telegram của bạn.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">PHƯƠNG THỨC THANH TOÁN</label>
+        <div class="payment-method-group">
+          <label class="payment-option active" id="opt-usdt">
+            <input type="radio" name="payment-method" value="usdt" checked />
+            <div class="label">₮ USDT (Ưu tiên)</div>
+            <div class="sub">Mạng TRC20</div>
+          </label>
+          <label class="payment-option" id="opt-bank">
+            <input type="radio" name="payment-method" value="bank" />
+            <div class="label">🏦 Ngân hàng</div>
+            <div class="sub">Chuyển khoản qua VietQR</div>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn btn-gold" id="btn-proceed" style="font-size:18px; padding:16px;">TIẾP TỤC THANH TOÁN ➔</button>
+      <div class="form-footer-links">
+        <a id="btn-back-to-items">QUAY LẠI DANH SÁCH</a>
+      </div>
+    </section>
+
+    <!-- XÁC NHẬN (cho gói) -->
+    <section class="panel payment-screen" id="confirm-form-panel">
+      <h2 class="panel-title" style="color:var(--gold);">Xác Nhận Tài Khoản</h2>
+      <div style="color:var(--gold-light); font-size:14px; font-weight:700; margin-bottom:24px; line-height:1.5;">
+        Điền thông tin xong sẽ không thể sửa lại, hãy kiểm tra cẩn thận nhé
+      </div>
+      <div style="text-align:left; margin-bottom:24px;">
+        <div class="info-block info-block-flex" style="margin-bottom:12px;">
+          <div>
+            <span>NGÂN HÀNG</span>
+            <strong id="confirm-display-bank">-</strong>
+          </div>
+          <div class="confirm-logo-box">
+            <img id="confirm-display-bank-logo" src="" alt="Bank Logo" />
+          </div>
+        </div>
+        <div class="info-block" style="margin-bottom:12px;">
+          <span>SỐ TÀI KHOẢN</span>
+          <div class="copy-wrapper">
+            <strong id="confirm-display-account" class="info-text">-</strong>
+            <button class="btn-copy" data-copy-target="confirm-display-account" title="Sao chép số tài khoản">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        <div class="info-block" style="margin-bottom:12px;">
+          <span>TÊN CHỦ TÀI KHOẢN</span>
+          <strong id="confirm-display-fullname">-</strong>
+        </div>
+        <div class="info-block" style="margin-bottom:12px;">
+          <span>TELEGRAM</span>
+          <strong id="confirm-display-telegram">-</strong>
+        </div>
+        <div class="info-block">
+          <span>PHƯƠNG THỨC THANH TOÁN</span>
+          <strong id="confirm-display-method">-</strong>
+        </div>
+      </div>
+      <button class="btn btn-gold" id="btn-confirm-final" style="font-size:18px; padding:16px; margin-bottom:16px;">XÁC NHẬN CHÍNH XÁC & TIẾP TỤC ➔</button>
+      <div class="form-footer-links">
+        <a id="btn-back-to-form">QUAY LẠI CHỈNH SỬA</a>
+      </div>
+    </section>
+
+    <!-- THANH TOÁN -->
+    <section class="panel payment-screen" id="payment-qr-panel">
+      <div class="status-badge" id="payment-status-label">Đang Chờ Thanh Toán</div>
+      <div class="warning-subtitle">⚠️ KHÔNG ĐÓNG TRANG WEB TRONG QUÁ TRÌNH THANH TOÁN</div>
+
+      <div id="qr-area">
+        <div class="qr-card">
+          <img id="qr-image-target" src="" alt="Mã VietQR" />
+        </div>
+      </div>
+
+      <div id="usdt-area" style="display:none;">
+        <div class="usdt-address-box">
+          <div class="label">ĐỊA CHỈ VÍ USDT (TRC20)</div>
+          <div class="copy-wrapper">
+            <span id="usdt-wallet-address" class="info-text">-</span>
+            <button class="btn-copy" data-copy-target="usdt-wallet-address" title="Sao chép địa chỉ ví">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        <div class="qr-usdt-wrap">
+          <div class="qr-card" style="background:white; padding:12px; display:inline-block;">
+            <img id="usdt-qr-image" src="" alt="QR Code USDT" style="width:180px; height:180px; display:block;" />
+          </div>
+        </div>
+        <p style="color:var(--muted); font-size:14px; margin:12px 0 24px;">
+          Vui lòng chuyển đúng số tiền <strong id="usdt-amount-display">0</strong> USDT vào địa chỉ trên.<br />
+          <span style="color:var(--gold);">Quét mã QR để chuyển nhanh</span>
+          <br /><small style="color:var(--muted);">Tỷ giá áp dụng: <span id="usdt-rate-display">-</span> VND/USDT</small>
+        </p>
+      </div>
+
+      <div class="info-row-grid" id="bankPaymentInfo">
+        <div class="info-block" id="bankNameBlock">
+          <span>NGÂN HÀNG</span>
+          <strong id="display-bank-name">-</strong>
+        </div>
+        <div class="info-block" id="accountNumberBlock" style="grid-column: 1 / -1; margin-bottom: 0;">
+          <span>SỐ TÀI KHOẢN</span>
+          <div class="copy-wrapper">
+            <strong id="display-bank-account" class="info-text">-</strong>
+            <button class="btn-copy" data-copy-target="display-bank-account" title="Sao chép số tài khoản nhận">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        <div class="info-block">
+          <span>SỐ TIỀN</span>
+          <strong id="display-amount">0 VNĐ</strong>
+        </div>
+        <div class="info-block" id="memoBlock">
+          <span>NỘI DUNG CHUYỂN KHOẢN</span>
+          <div class="copy-wrapper">
+            <strong id="display-memo" class="info-text">-</strong>
+            <button class="btn-copy" data-copy-target="display-memo" title="Sao chép nội dung">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="system-status-text"><span class="spinner"></span> ĐANG CHỜ THANH TOÁN...</div>
+      <div class="system-sub-desc">
+        Vui lòng chuyển đúng số tiền để hệ thống nhận diện tức thì. Tiền sẽ được chuyển về tài khoản <span style="color:#fff; font-weight:700;"></span> ngay sau khi xác nhận thành công.
+      </div>
+
+      <button class="btn btn-outline" id="btn-cancel-pay" style="width:auto; padding:12px 32px;">HỦY BỎ VÀ QUAY LẠI</button>
+    </section>
+  </div>
+</main>
+
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightboxOverlay">
+  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="Xem ảnh" />
+</div>
+
+<script>
+  // ===== FIREBASE CONFIG (THAY BẰNG CỦA BẠN) =====
+  const firebaseConfig = {
+    apiKey: "AIzaSy...", // THAY
+    authDomain: "checktime-3a697.firebaseapp.com",
+    databaseURL: "https://checktime-3a697-default-rtdb.firebaseio.com",
+    projectId: "checktime-3a697",
+    storageBucket: "checktime-3a697.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+  const ordersRef = database.ref('orders');
+  const configRef = database.ref('config');
+  const packagesRef = database.ref('packages');
+  const productsRef = database.ref('products');
+
+  // ===== LIGHTBOX =====
+  const lightboxOverlay = document.getElementById('lightboxOverlay');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxClose = document.getElementById('lightboxClose');
+
+  function openLightbox(imgSrc) {
+    if (!imgSrc) return;
+    lightboxImg.src = imgSrc;
+    lightboxOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightboxOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(() => { lightboxImg.src = ''; }, 400);
+  }
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightboxOverlay.addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // ===== MAP MÃ NGÂN HÀNG =====
+  const bankNameMap = {
+    'MoMo': 'MoMo', 'ZaloPay': 'ZaloPay', 'MBBank': 'MBBank', 'Vietcombank': 'Vietcombank (VCB)',
+    'VietinBank': 'VietinBank', 'BIDV': 'BIDV', 'Agribank': 'Agribank', 'Techcombank': 'Techcombank (TCB)',
+    'ACB': 'ACB', 'VPBank': 'VPBank', 'Sacombank': 'Sacombank', 'TPBank': 'TPBank', 'HDBank': 'HDBank',
+    'VIB': 'VIB', 'OCB': 'OCB', 'SHB': 'SHB', 'SeABank': 'SeABank', 'MSB': 'MSB', 'Eximbank': 'Eximbank',
+    'LPBank': 'LPBank', 'NamABank': 'Nam A Bank', 'NCB': 'NCB', 'SCB': 'SCB', 'BacABank': 'Bac A Bank',
+    'DongABank': 'DongA Bank', 'Kienlong': 'Kienlongbank', 'BVBank': 'BVBank', 'Oceanbank': 'Oceanbank',
+    'GPBank': 'GPBank', 'CBBank': 'CBBank'
+  };
+
+  // ===== LẤY IP =====
+  async function getClientIP() {
+    const apis = ['https://api.ipify.org?format=json', 'https://ipapi.co/json/', 'https://api.ip.sb/geoip'];
+    for (const url of apis) {
+      try {
+        const res = await Promise.race([fetch(url), new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))]);
+        const data = await res.json();
+        if (data.ip) return data.ip;
+        if (data.query) return data.query;
+      } catch (e) {}
+    }
+    return 'Không xác định';
+  }
+
+  // ===== LẤY TỶ GIÁ USDT/VND =====
+  async function getUSDTRate() {
+    try {
+      const res = await Promise.race([fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=vnd'), new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))]);
+      const data = await res.json();
+      if (data && data.tether && data.tether.vnd) return data.tether.vnd;
+      throw new Error('Không lấy được tỷ giá');
+    } catch (e) {
+      try {
+        const res2 = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTVND');
+        const data2 = await res2.json();
+        if (data2 && data2.price) return parseFloat(data2.price);
+      } catch (e2) {}
+      return null;
+    }
+  }
+
+  // ===== COPY =====
+  function copyText(text, buttonElement) {
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => showCopied(buttonElement)).catch(() => fallbackCopy(text, buttonElement));
+    } else { fallbackCopy(text, buttonElement); }
+  }
+  function fallbackCopy(text, buttonElement) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text; textarea.style.position = 'fixed'; textarea.style.opacity = '0';
+    document.body.appendChild(textarea); textarea.select();
+    try { document.execCommand('copy'); showCopied(buttonElement); } catch (e) { alert('Không thể sao chép.'); }
+    document.body.removeChild(textarea);
+  }
+  function showCopied(buttonElement) {
+    if (!buttonElement) return;
+    const originalHtml = buttonElement.innerHTML;
+    buttonElement.innerHTML = '<i class="fas fa-check"></i>'; buttonElement.classList.add('copied');
+    setTimeout(() => { buttonElement.innerHTML = originalHtml; buttonElement.classList.remove('copied'); }, 2000);
+  }
+
+  // ===== PHẦN CHÍNH =====
+  let selectedItemPrice = 0;
+  let selectedItemName = '';
+  let selectedItemType = ''; // 'product' hoặc 'package'
+  let selectedProductKey = null;
+  let selectedBankCode = '';
+  let selectedPaymentMethod = 'usdt';
+  let currentConfig = {};
+  let packages = [];
+  let products = [];
+
+  function loadConfig() {
+    configRef.once('value', snapshot => {
+      const data = snapshot.val();
+      if (data) currentConfig = data;
+      else currentConfig = { bankCode: 'MB', accountNumber: 'VQRQAKKMJ5126', accountName: ' ', usdtWallet: 'TUW9F1k2X3y4z5A6B7C8D9E0F1G2H3I4J5K6L', usdtRate: 26000, autoRate: true, memoPrefix: 'MUAHANG', telegramToken: '', telegramChatId: '' };
+    });
+  }
+  loadConfig();
+
+  // ===== LẤY GÓI & SẢN PHẨM =====
+  function loadPackages() {
+    packagesRef.on('value', snapshot => {
+      const data = snapshot.val();
+      packages = data ? Object.keys(data).map(key => ({ _key: key, ...data[key] })) : [];
+      renderPackages();
+    });
+  }
+  loadPackages();
+
+  function loadProducts() {
+    productsRef.on('value', snapshot => {
+      const data = snapshot.val();
+      products = data ? Object.keys(data).map(key => ({ _key: key, ...data[key] })) : [];
+      renderProducts();
+    });
+  }
+  loadProducts();
+
+  // ===== RENDER GÓI =====
+  function renderPackages() {
+    const container = document.getElementById('packagesContainer');
+    container.innerHTML = '';
+    if (!packages.length) {
+      container.innerHTML = '<div style="color:var(--muted); text-align:center; padding:40px 0;">Chưa có gói nào.</div>';
+      return;
+    }
+    packages.forEach(pkg => {
+      const card = document.createElement('div');
+      card.className = 'package-card';
+
+      // Xử lý mô tả
+      const desc = pkg.description || '';
+      const shortDesc = desc.length > 80 ? desc.substring(0, 80) + '...' : desc;
+      const needToggle = desc.length > 80;
+
+      const stock = pkg.stock !== undefined ? pkg.stock : 999;
+      const outOfStock = stock <= 0;
+
+      card.innerHTML = `
+        <h3>${escapeHtml(pkg.name)}</h3>
+        <span class="label">GIÁ MUA</span>
+        <div class="price">${money(pkg.price)}</div>
+        <div class="stock ${outOfStock ? 'out' : ''}">${outOfStock ? '🔥 Hết hàng' : `📦 Còn ${stock} gói`}</div>
+        <div class="pkg-desc ${needToggle ? '' : 'expanded'}">${escapeHtml(desc)}</div>
+        ${needToggle ? `<button class="desc-toggle" data-target="${pkg._key}">Xem thêm</button>` : ''}
+        <div class="btn-group">
+          ${pkg.imageUrl ? `<button class="btn btn-img view-img" data-img="${escapeHtml(pkg.imageUrl)}"><i class="fas fa-image"></i></button>` : ''}
+          <button class="btn btn-gold buy-package" data-key="${escapeHtml(pkg._key)}" ${outOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+            ${outOfStock ? 'Hết hàng' : 'CHỌN GÓI'}
+          </button>
+        </div>
+      `;
+      container.appendChild(card);
+
+      // Sự kiện xem ảnh
+      card.querySelectorAll('.view-img').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openLightbox(this.dataset.img);
+        });
+      });
+
+      // Sự kiện xem thêm mô tả
+      const toggleBtn = card.querySelector('.desc-toggle');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+          const descEl = this.previousElementSibling;
+          descEl.classList.toggle('expanded');
+          this.textContent = descEl.classList.contains('expanded') ? 'Thu gọn' : 'Xem thêm';
+        });
+      }
+
+      // Chọn gói
+      card.querySelector('.buy-package').addEventListener('click', function(e) {
+        if (this.disabled) return;
+        const key = this.dataset.key;
+        const pkg = packages.find(p => p._key === key);
+        if (!pkg) return;
+        selectedItemName = pkg.name;
+        selectedItemPrice = pkg.price;
+        selectedItemType = 'package';
+        // Ẩn gói và sản phẩm, hiện form
+        document.getElementById('section-packages-wrapper').style.display = 'none';
+        document.getElementById('section-products-wrapper').style.display = 'none';
+        document.getElementById('order-form-panel').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+
+  // ===== RENDER SẢN PHẨM =====
+  function renderProducts() {
+    const container = document.getElementById('productsContainer');
+    const section = document.getElementById('section-products-wrapper');
+    container.innerHTML = '';
+    if (!products.length) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = 'block';
+    products.sort((a, b) => (a.priority || 999) - (b.priority || 999));
+
+    products.forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      const stock = product.stock !== undefined ? product.stock : 10;
+      const outOfStock = stock <= 0;
+      const imgHtml = product.imageUrl ? `<div class="img-wrap"><img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" /></div>` : `<div class="img-wrap" style="background:#0a0a0f; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:14px;">Không có ảnh</div>`;
+      card.innerHTML = `
+        ${imgHtml}
+        <div class="body">
+          <h3>${escapeHtml(product.name)}</h3>
+          <div class="desc">${escapeHtml(product.description || '')}</div>
+          <div class="price-row">
+            <span class="price">${money(product.price)}</span>
+            <span class="stock ${outOfStock ? 'out' : ''}">${outOfStock ? '🔥 Hết hàng' : `📦 ${stock}`}</span>
+          </div>
+          <button class="btn-small buy-product" data-key="${escapeHtml(product._key)}" ${outOfStock ? 'disabled' : ''}>
+            ${outOfStock ? 'Hết hàng' : 'Mua ngay'}
+          </button>
+        </div>
+      `;
+      container.appendChild(card);
+
+      // Lightbox ảnh
+      const imgWrap = card.querySelector('.img-wrap img');
+      if (imgWrap) {
+        imgWrap.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openLightbox(this.src);
+        });
+      }
+
+      // Mua sản phẩm
+      card.querySelector('.buy-product').addEventListener('click', function(e) {
+        if (this.disabled) return;
+        const key = this.dataset.key;
+        const product = products.find(p => p._key === key);
+        if (!product) return;
+        selectedProductKey = key;
+        selectedItemName = product.name;
+        selectedItemPrice = product.price;
+        selectedItemType = 'product';
+        document.getElementById('modalProductName').textContent = 'Sản phẩm: ' + product.name;
+        document.getElementById('modalQuantity').value = 1;
+        document.getElementById('modalNote').value = '';
+        document.querySelector('input[name="modalPaymentMethod"][value="usdt"]').checked = true;
+        document.getElementById('modalMethodUsdt').classList.add('active');
+        document.getElementById('modalMethodBank').classList.remove('active');
+        updateModalTotal();
+        document.getElementById('orderModal').classList.add('active');
+      });
+    });
+  }
+
+  // ===== MODAL ĐẶT HÀNG =====
+  const modal = document.getElementById('orderModal');
+  const modalQuantity = document.getElementById('modalQuantity');
+  const modalNote = document.getElementById('modalNote');
+  const modalTotal = document.getElementById('modalTotal');
+
+  function updateModalTotal() {
+    const qty = parseInt(modalQuantity.value) || 1;
+    const total = selectedItemPrice * qty;
+    modalTotal.textContent = money(total);
+    modal.dataset.total = total;
+  }
+
+  document.querySelectorAll('input[name="modalPaymentMethod"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.payment-method-select label').forEach(l => l.classList.remove('active'));
+      if (this.value === 'usdt') {
+        document.getElementById('modalMethodUsdt').classList.add('active');
+      } else {
+        document.getElementById('modalMethodBank').classList.add('active');
+      }
+    });
+  });
+
+  modalQuantity.addEventListener('input', updateModalTotal);
+
+  document.getElementById('modalCancel').addEventListener('click', function() {
+    modal.classList.remove('active');
+  });
+
+  document.getElementById('modalConfirm').addEventListener('click', function() {
+    const qty = parseInt(modalQuantity.value) || 1;
+    const note = modalNote.value.trim();
+    const total = selectedItemPrice * qty;
+    if (total <= 0) return;
+
+    const methodRadio = document.querySelector('input[name="modalPaymentMethod"]:checked');
+    const method = methodRadio ? methodRadio.value : 'usdt';
+
+    modal.classList.remove('active');
+    selectedItemPrice = total;
+    window._orderQty = qty;
+    window._orderNote = note;
+
+    document.getElementById('section-packages-wrapper').style.display = 'none';
+    document.getElementById('section-products-wrapper').style.display = 'none';
+    processProductPayment(method);
+  });
+
+  // ===== HÀM XỬ LÝ THANH TOÁN CHO SẢN PHẨM =====
+  async function processProductPayment(method) {
+    const clientIP = await getClientIP();
+    const fingerprint = getDeviceFingerprint();
+
+    let usdtRate = currentConfig.usdtRate || 26000;
+    let rateSource = 'manual';
+    if (currentConfig.autoRate !== false) {
+      const realRate = await getUSDTRate();
+      if (realRate && realRate > 0) { usdtRate = realRate; rateSource = 'api'; }
+    }
+
+    const memo = (currentConfig.memoPrefix || "MUAHANG") + " " + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+    const orderData = {
+      id: "ORD-" + Date.now().toString(36).toUpperCase(),
+      packageName: selectedItemName || 'SẢN PHẨM',
+      amount: selectedItemPrice || 0,
+      method: method,
+      status: "pending",
+      fullName: 'Khách hàng',
+      telegram: '',
+      customerNote: window._orderNote || '',
+      quantity: window._orderQty || 1,
+      ip: clientIP,
+      deviceFingerprint: fingerprint,
+      usdtRate: usdtRate,
+      rateSource: rateSource,
+      createdAt: new Date().toISOString(),
+      bank: selectedBankCode || 'MBBank',
+      account: 'KHÔNG CÓ',
+      accountName: 'Khách hàng',
+      usdtNetwork: method === "usdt" ? "TRC20" : "",
+      usdtWallet: method === "usdt" ? currentConfig.usdtWallet || "TUW9F1k2X3y4z5A6B7C8D9E0F1G2H3I4J5K6L" : "",
+      txHash: ""
+    };
+
+    try {
+      await ordersRef.push(orderData);
+      console.log("✅ Đơn hàng sản phẩm đã lưu");
+
+      const tgToken = currentConfig.telegramToken;
+      const tgChatId = currentConfig.telegramChatId;
+      if (tgToken && tgChatId) {
+        const message = `🆕 ĐƠN HÀNG SẢN PHẨM MỚI!\n📦: ${orderData.packageName}\n💰 ${orderData.amount.toLocaleString('vi-VN')} VNĐ\n💳 ${method === 'usdt' ? 'USDT' : 'Ngân hàng'}\n📝 Ghi chú: ${orderData.customerNote}`;
+        await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: tgChatId, text: message, parse_mode: 'HTML' })
+        });
+      }
+
+      document.getElementById('order-form-panel').style.display = 'none';
+      document.getElementById('confirm-form-panel').style.display = 'none';
+      document.getElementById('payment-qr-panel').style.display = 'block';
+
+      const qrArea = document.getElementById("qr-area");
+      const usdtArea = document.getElementById("usdt-area");
+      const statusLabel = document.getElementById("payment-status-label");
+      const memoBlock = document.getElementById("memoBlock");
+      const accountNumberBlock = document.getElementById("accountNumberBlock");
+      const bankNameBlock = document.getElementById("bankNameBlock");
+
+      const systemAccount = currentConfig.accountNumber || 'VQRQAKKMJ5126';
+      document.getElementById("display-bank-account").innerText = systemAccount;
+      document.getElementById("display-amount").innerText = orderData.amount.toLocaleString('vi-VN') + " VNĐ";
+
+      if (method === "bank") {
+        qrArea.style.display = "block"; usdtArea.style.display = "none";
+        statusLabel.innerText = "Đang Chờ Thanh Toán";
+        bankNameBlock.style.display = "block"; accountNumberBlock.style.display = "block"; memoBlock.style.display = "block";
+        document.getElementById("display-memo").innerText = memo;
+        const bankCode = currentConfig.bankCode || 'MB';
+        const bankDisplayName = bankNameMap[bankCode] || bankCode;
+        document.getElementById("display-bank-name").innerText = bankDisplayName;
+        const accNum = currentConfig.accountNumber || 'VQRQAKKMJ5126';
+        const accName = currentConfig.accountName || ' ';
+        const qrUrl = `https://img.vietqr.io/image/${bankCode}-${accNum}-compact2.png?amount=${orderData.amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(accName)}`;
+        document.getElementById("qr-image-target").src = qrUrl;
+      } else {
+        qrArea.style.display = "none"; usdtArea.style.display = "block";
+        statusLabel.innerText = "Đang Chờ Thanh Toán (USDT)";
+        bankNameBlock.style.display = "none"; accountNumberBlock.style.display = "none"; memoBlock.style.display = "none";
+        const usdtAmount = orderData.amount / usdtRate;
+        document.getElementById("usdt-amount-display").innerText = usdtAmount.toFixed(2);
+        const wallet = currentConfig.usdtWallet || "TUW9F1k2X3y4z5A6B7C8D9E0F1G2H3I4J5K6L";
+        document.getElementById("usdt-wallet-address").innerText = wallet;
+        document.getElementById("usdt-rate-display").innerText = usdtRate.toLocaleString('vi-VN') + ' VND';
+        document.getElementById("usdt-qr-image").src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(wallet)}`;
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    } catch (error) {
+      alert("❌ Lỗi khi lưu đơn hàng: " + error.message);
+    }
+  }
+
+  // ===== UTILITY =====
+  function money(v) { return Number(v || 0).toLocaleString('vi-VN') + ' VNĐ'; }
+  function escapeHtml(v) { return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+
+  // ===== FINGERPRINT =====
+  function getDeviceFingerprint() {
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.textBaseline = "top";
+      ctx.font = "14px 'Arial'";
+      ctx.fillStyle = "#f60";
+      ctx.fillRect(125, 1, 62, 20);
+      ctx.fillStyle = "#069";
+      ctx.fillText("TienBan_Security_Check", 2, 15);
+      ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+      ctx.fillText("TienBan_Security_Check", 4, 17);
+      const rawData = navigator.userAgent + screen.width + screen.height + new Date().getTimezoneOffset() + canvas.toDataURL();
+      let hash = 0;
+      for (let i = 0; i < rawData.length; i++) {
+        const char = rawData.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      const canvasHash = Math.abs(hash).toString(16);
+      let localId = localStorage.getItem('tb_device_id');
+      if (!localId) {
+        localId = 'DID-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('tb_device_id', localId);
+      }
+      return localId + '_' + canvasHash;
+    } catch (e) {
+      return 'fallback_' + Math.random().toString(36).substring(2, 15);
+    }
+  }
+
+  // ===== KIỂM TRA BAN =====
+  async function checkIfBanned() {
+    const clientIP = await getClientIP();
+    const fingerprint = getDeviceFingerprint();
+    try {
+      const bannedRef = database.ref('banned_users');
+      const snapshot = await bannedRef.once('value');
+      const bans = snapshot.val();
+      if (bans) {
+        for (const key in bans) {
+          const ban = bans[key];
+          if (ban.ip === clientIP || ban.fingerprint === fingerprint) {
+            document.open();
+            document.write('<style>html, body { margin: 0; padding: 0; background-color: #000000 !important; height: 100vh; width: 100vw; overflow: hidden; cursor: none; } * { display: none !important; }</style>');
+            document.close();
+            setTimeout(() => { window.location.replace('https://www.google.com'); }, 500);
+            return true;
+          }
+        }
+      }
+    } catch (error) { console.error("Lỗi kiểm tra ban:", error); }
+    return false;
+  }
+  checkIfBanned();
+
+  // ===== DOM REFS =====
+  const sectionPackages = document.getElementById("section-packages-wrapper");
+  const sectionProducts = document.getElementById("section-products-wrapper");
+  const orderFormPanel = document.getElementById("order-form-panel");
+  const confirmFormPanel = document.getElementById("confirm-form-panel");
+  const paymentQrPanel = document.getElementById("payment-qr-panel");
+
+  document.getElementById("btn-back-to-items").addEventListener("click", e => {
+    e.preventDefault();
+    orderFormPanel.style.display = "none";
+    sectionPackages.style.display = 'block';
+    if (products.length) sectionProducts.style.display = 'block';
+  });
+
+  // ===== VALIDATE =====
+  const accountInput = document.getElementById("input-account");
+  const errorAccount = document.getElementById("error-account");
+  accountInput.addEventListener("input", function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+    if (this.value.length > 0) { errorAccount.style.display = "none"; this.classList.remove("input-error"); }
+  });
+
+  const fullnameInput = document.getElementById("input-fullname");
+  const errorFullname = document.getElementById("error-fullname");
+  fullnameInput.addEventListener("input", function() {
+    this.value = this.value.replace(/[0-9]/g, '').toUpperCase();
+    if (this.value.trim().length > 0) { errorFullname.style.display = "none"; this.classList.remove("input-error"); }
+  });
+
+  const telegramInput = document.getElementById("input-telegram");
+  const errorTelegram = document.getElementById("error-telegram");
+  telegramInput.addEventListener("input", function() {
+    let val = this.value.trim();
+    if (val && !val.startsWith('@')) this.value = '@' + val.replace(/^@+/, '');
+    if (this.value.trim().length > 1) { errorTelegram.style.display = "none"; this.classList.remove("input-error"); }
+  });
+
+  // ===== BANK DROPDOWN =====
+  const bankTrigger = document.getElementById("bank-selector-trigger");
+  const bankDropdown = document.getElementById("bank-dropdown");
+  const bankSearchInput = document.getElementById("bank-search-input");
+  const selectedBankText = document.getElementById("selected-bank-text");
+  const bankItems = document.querySelectorAll(".bank-item");
+  const errorBank = document.getElementById("error-bank");
+
+  bankTrigger.addEventListener("click", e => {
+    e.stopPropagation();
+    bankDropdown.classList.toggle("show");
+    bankTrigger.classList.toggle("open");
+    if (window.innerWidth > 768 && bankDropdown.classList.contains("show")) bankSearchInput.focus();
+  });
+
+  bankSearchInput.addEventListener("input", e => {
+    const keyword = e.target.value.toLowerCase().trim();
+    bankItems.forEach(item => {
+      const name = item.querySelector(".bank-name").innerText.toLowerCase();
+      const code = item.getAttribute("data-code").toLowerCase();
+      item.style.display = (name.includes(keyword) || code.includes(keyword)) ? "flex" : "none";
+    });
+  });
+
+  bankItems.forEach(item => {
+    item.addEventListener("click", function() {
+      bankItems.forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+      selectedBankCode = this.getAttribute("data-code");
+      selectedBankText.innerText = this.querySelector(".bank-name").innerText;
+      selectedBankText.style.color = "#fff";
+      selectedBankText.style.fontWeight = "bold";
+      errorBank.style.display = "none";
+      bankTrigger.classList.remove("input-error");
+      bankDropdown.classList.remove("show");
+      bankTrigger.classList.remove("open");
+      bankSearchInput.value = "";
+      bankItems.forEach(b => b.style.display = "flex");
+    });
+  });
+
+  document.addEventListener("click", e => {
+    if (!bankTrigger.contains(e.target) && !bankDropdown.contains(e.target)) {
+      bankDropdown.classList.remove("show");
+      bankTrigger.classList.remove("open");
+    }
+  });
+
+  // ===== PAYMENT METHOD =====
+  const optUsdt = document.getElementById("opt-usdt");
+  const optBank = document.getElementById("opt-bank");
+  const radioUsdt = document.querySelector('input[name="payment-method"][value="usdt"]');
+  const radioBank = document.querySelector('input[name="payment-method"][value="bank"]');
+
+  function setPaymentMethod(method) {
+    selectedPaymentMethod = method;
+    if (method === "usdt") { optUsdt.classList.add("active"); optBank.classList.remove("active"); radioUsdt.checked = true; }
+    else { optBank.classList.add("active"); optUsdt.classList.remove("active"); radioBank.checked = true; }
+  }
+  optUsdt.addEventListener("click", e => { e.preventDefault(); setPaymentMethod("usdt"); });
+  optBank.addEventListener("click", e => { e.preventDefault(); setPaymentMethod("bank"); });
+
+  // ===== PROCEED =====
+  document.getElementById("btn-proceed").addEventListener("click", function() {
+    const account = accountInput.value.trim();
+    const fullname = fullnameInput.value.trim();
+    const telegram = telegramInput.value.trim();
+    let hasError = false;
+
+    if (!account || account.length < 6) { errorAccount.style.display = "block"; accountInput.classList.add("input-error"); hasError = true; }
+    if (!fullname) { errorFullname.style.display = "block"; fullnameInput.classList.add("input-error"); hasError = true; }
+    if (!selectedBankCode) { errorBank.style.display = "block"; bankTrigger.classList.add("input-error"); hasError = true; }
+    if (!telegram || telegram.length < 2) { errorTelegram.style.display = "block"; telegramInput.classList.add("input-error"); hasError = true; }
+    if (hasError) return;
+
+    const activeBank = document.querySelector(".bank-item.active");
+    const bankName = activeBank.querySelector(".bank-name").innerText;
+    const bankLogo = activeBank.querySelector(".bank-logo-wrap img").src;
+
+    document.getElementById("confirm-display-bank").innerText = bankName;
+    document.getElementById("confirm-display-bank-logo").src = bankLogo;
+    document.getElementById("confirm-display-account").innerText = account;
+    document.getElementById("confirm-display-fullname").innerText = fullname;
+    document.getElementById("confirm-display-telegram").innerText = telegram;
+    document.getElementById("confirm-display-method").innerText = (selectedPaymentMethod === "usdt") ? "USDT (TRC20)" : "Ngân hàng";
+
+    orderFormPanel.style.display = "none";
+    confirmFormPanel.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("btn-back-to-form").addEventListener("click", e => {
+    e.preventDefault();
+    confirmFormPanel.style.display = "none";
+    orderFormPanel.style.display = "block";
+  });
+
+  // ===== CONFIRM FINAL =====
+  document.getElementById("btn-confirm-final").addEventListener("click", async function() {
+    const account = accountInput.value.trim();
+    const fullname = fullnameInput.value.trim();
+    const telegram = telegramInput.value.trim();
+
+    const clientIP = await getClientIP();
+    const fingerprint = getDeviceFingerprint();
+
+    let usdtRate = currentConfig.usdtRate || 26000;
+    let rateSource = 'manual';
+    if (currentConfig.autoRate !== false) {
+      const realRate = await getUSDTRate();
+      if (realRate && realRate > 0) { usdtRate = realRate; rateSource = 'api'; }
+    }
+
+    const memo = (currentConfig.memoPrefix || "MUAHANG") + " " + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+    const orderData = {
+      id: "ORD-" + Date.now().toString(36).toUpperCase(),
+      packageName: selectedItemName || 'KHÔNG XÁC ĐỊNH',
+      amount: selectedItemPrice || 0,
+      method: selectedPaymentMethod,
+      status: "pending",
+      fullName: fullname,
+      telegram: telegram,
+      customerNote: "",
+      ip: clientIP,
+      deviceFingerprint: fingerprint,
+      usdtRate: usdtRate,
+      rateSource: rateSource,
+      createdAt: new Date().toISOString(),
+      bank: selectedBankCode,
+      account: account,
+      accountName: fullname,
+      usdtNetwork: selectedPaymentMethod === "usdt" ? "TRC20" : "",
+      usdtWallet: selectedPaymentMethod === "usdt" ? currentConfig.usdtWallet || "TUW9F1k2X3y4z5A6B7C8D9E0F1G2H3I4J5K6L" : "",
+      txHash: ""
+    };
+
+    try {
+      await ordersRef.push(orderData);
+      console.log("✅ Đơn hàng gói đã lưu");
+
+      const tgToken = currentConfig.telegramToken;
+      const tgChatId = currentConfig.telegramChatId;
+      if (tgToken && tgChatId) {
+        const message = `🆕 ĐƠN HÀNG GÓI MỚI!\n👤 Khách: ${fullname}\n📦: ${orderData.packageName}\n💰 ${selectedItemPrice.toLocaleString('vi-VN')} VNĐ\n💳 ${selectedPaymentMethod === 'usdt' ? 'USDT' : 'Ngân hàng'}\n📱 Telegram: ${telegram}`;
+        await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: tgChatId, text: message, parse_mode: 'HTML' })
+        });
+      }
+
+      confirmFormPanel.style.display = "none";
+      paymentQrPanel.style.display = "block";
+
+      const qrArea = document.getElementById("qr-area");
+      const usdtArea = document.getElementById("usdt-area");
+      const statusLabel = document.getElementById("payment-status-label");
+      const memoBlock = document.getElementById("memoBlock");
+      const accountNumberBlock = document.getElementById("accountNumberBlock");
+      const bankNameBlock = document.getElementById("bankNameBlock");
+
+      const systemAccount = currentConfig.accountNumber || 'VQRQAKKMJ5126';
+      document.getElementById("display-bank-account").innerText = systemAccount;
+      document.getElementById("display-amount").innerText = selectedItemPrice.toLocaleString('vi-VN') + " VNĐ";
+
+      if (selectedPaymentMethod === "bank") {
+        qrArea.style.display = "block"; usdtArea.style.display = "none";
+        statusLabel.innerText = "Đang Chờ Thanh Toán";
+        bankNameBlock.style.display = "block"; accountNumberBlock.style.display = "block"; memoBlock.style.display = "block";
+        document.getElementById("display-memo").innerText = memo;
+        const bankCode = currentConfig.bankCode || 'MB';
+        const bankDisplayName = bankNameMap[bankCode] || bankCode;
+        document.getElementById("display-bank-name").innerText = bankDisplayName;
+        const accNum = currentConfig.accountNumber || 'VQRQAKKMJ5126';
+        const accName = currentConfig.accountName || ' ';
+        const qrUrl = `https://img.vietqr.io/image/${bankCode}-${accNum}-compact2.png?amount=${selectedItemPrice}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(accName)}`;
+        document.getElementById("qr-image-target").src = qrUrl;
+      } else {
+        qrArea.style.display = "none"; usdtArea.style.display = "block";
+        statusLabel.innerText = "Đang Chờ Thanh Toán (USDT)";
+        bankNameBlock.style.display = "none"; accountNumberBlock.style.display = "none"; memoBlock.style.display = "none";
+        const usdtAmount = selectedItemPrice / usdtRate;
+        document.getElementById("usdt-amount-display").innerText = usdtAmount.toFixed(2);
+        const wallet = currentConfig.usdtWallet || "TUW9F1k2X3y4z5A6B7C8D9E0F1G2H3I4J5K6L";
+        document.getElementById("usdt-wallet-address").innerText = wallet;
+        document.getElementById("usdt-rate-display").innerText = usdtRate.toLocaleString('vi-VN') + ' VND';
+        document.getElementById("usdt-qr-image").src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(wallet)}`;
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    } catch (error) {
+      alert("❌ Lỗi khi lưu đơn hàng: " + error.message);
+    }
+  });
+
+  document.getElementById("btn-cancel-pay").addEventListener("click", function() {
+    paymentQrPanel.style.display = "none";
+    sectionPackages.style.display = 'block';
+    if (products.length) sectionProducts.style.display = 'block';
+    document.getElementById("qr-area").style.display = "block";
+    document.getElementById("usdt-area").style.display = "none";
+    document.getElementById("bankNameBlock").style.display = "block";
+    document.getElementById("accountNumberBlock").style.display = "block";
+    document.getElementById("memoBlock").style.display = "block";
+  });
+
+  // Copy buttons
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-copy').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const targetId = this.dataset.copyTarget;
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) copyText(targetEl.textContent.trim(), this);
+      });
+    });
+  });
+
+  // Anti-hack
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I')) e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && (e.key === 'j' || e.key === 'J')) e.preventDefault();
+    if (e.ctrlKey && (e.key === 's' || e.key === 'S')) e.preventDefault();
+  });
+</script>
+</body>
+</html>
