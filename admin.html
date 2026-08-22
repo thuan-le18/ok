@@ -7,7 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
-    /* ===== RESET & VARIABLES ===== */
+    /* --- GIỮ NGUYÊN CSS CŨ, CHỈ THÊM MỘT SỐ STYLE MỚI --- */
     :root {
       --bg: #07080b;
       --panel: #0f1117;
@@ -29,7 +29,7 @@
     button { cursor: pointer; }
     .hidden { display: none !important; }
 
-    /* ===== LOGIN ===== */
+    /* ===== LOGIN (giữ nguyên) ===== */
     .login-screen { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at 50% 0%, rgba(212,175,55,.08), transparent 35%), linear-gradient(180deg, #08090d 0%, #050609 100%); }
     .login-card { width: min(420px, 100%); background: rgba(15,17,23,.94); border: 1px solid var(--border); border-radius: 24px; padding: 34px; box-shadow: var(--shadow); backdrop-filter: blur(18px); }
     .brand { text-align: center; margin-bottom: 28px; }
@@ -137,7 +137,7 @@
     .btn-restore:hover { background: #1a68c7; }
     .security-note { padding: 10px; border-radius: 10px; background: rgba(96,165,250,.06); border: 1px solid rgba(96,165,250,.13); color: #a9c9f5; font-size: 10px; line-height: 1.6; }
 
-    /* ===== CONFIG & PRODUCT MANAGEMENT ===== */
+    /* ===== CONFIG & PRODUCT/PACKAGE MANAGEMENT ===== */
     .config-section { margin-top: 20px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
     .config-section h3 { color: var(--gold); margin: 0 0 12px; font-size: 15px; }
     .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -155,7 +155,7 @@
     .product-form textarea { min-height: 60px; resize: vertical; }
     .product-form .btn { width: auto; padding: 8px 24px; }
     .product-list { overflow-x: auto; }
-    .product-list table { min-width: 750px; }
+    .product-list table { min-width: 900px; }
     .product-list th, .product-list td { padding: 6px 10px; font-size: 12px; }
     .product-list .thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
     .product-list .actions button { background: transparent; border: none; color: var(--muted); padding: 4px 8px; font-size: 14px; cursor: pointer; transition: color .2s; }
@@ -178,6 +178,7 @@
       .config-checkbox { grid-column: span 1; }
       .drawer { width: 100%; }
       .product-form { grid-template-columns: 1fr; }
+      .product-list table { min-width: 700px; }
     }
     @media (max-width: 480px) {
       .stats { grid-template-columns: 1fr; }
@@ -191,7 +192,7 @@
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- LOGIN (giữ nguyên) -->
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">
@@ -238,6 +239,7 @@
   </aside>
 
   <main class="main">
+    <!-- TOPBAR -->
     <div class="topbar">
       <div>
         <h2>📋 Quản lý đơn hàng</h2>
@@ -309,15 +311,19 @@
           <input type="number" id="pkgPrice" placeholder="1000000" />
         </div>
         <div>
+          <label>Giá gốc (VND) – để trống nếu không có khuyến mãi</label>
+          <input type="number" id="pkgOldPrice" placeholder="1500000" />
+        </div>
+        <div>
           <label>Tồn kho</label>
-          <input type="number" id="pkgStock" placeholder="999" value="999" />
+          <input type="number" id="pkgStock" placeholder="999" />
         </div>
         <div class="full">
           <label>Mô tả</label>
           <textarea id="pkgDesc" placeholder="Mô tả gói..."></textarea>
         </div>
         <div class="full">
-          <label>Link ảnh</label>
+          <label>Link ảnh (dùng cho nút xem ảnh mô tả)</label>
           <input type="text" id="pkgImage" placeholder="https://example.com/image.jpg" />
         </div>
         <div class="full" style="display:flex; gap:12px;">
@@ -333,6 +339,7 @@
               <th>Ảnh</th>
               <th>Tên</th>
               <th>Giá</th>
+              <th>Giá gốc</th>
               <th>Tồn kho</th>
               <th>Hành động</th>
             </tr>
@@ -356,19 +363,23 @@
           <input type="number" id="prodPrice" placeholder="7000000" />
         </div>
         <div>
-          <label>Tồn kho</label>
-          <input type="number" id="prodStock" placeholder="10" value="10" />
+          <label>Giá gốc (VND) – để trống nếu không có khuyến mãi</label>
+          <input type="number" id="prodOldPrice" placeholder="10000000" />
         </div>
         <div>
           <label>Ưu tiên (số nhỏ trước)</label>
           <input type="number" id="prodPriority" placeholder="1" value="10" />
+        </div>
+        <div>
+          <label>Tồn kho</label>
+          <input type="number" id="prodStock" placeholder="999" />
         </div>
         <div class="full">
           <label>Mô tả</label>
           <textarea id="prodDesc" placeholder="Mô tả chi tiết sản phẩm..."></textarea>
         </div>
         <div class="full">
-          <label>Link ảnh</label>
+          <label>Link ảnh (hiển thị sẵn)</label>
           <input type="text" id="prodImage" placeholder="https://example.com/image.jpg" />
         </div>
         <div class="full" style="display:flex; gap:12px;">
@@ -384,8 +395,9 @@
               <th>Ảnh</th>
               <th>Tên</th>
               <th>Giá</th>
-              <th>Tồn kho</th>
+              <th>Giá gốc</th>
               <th>Ưu tiên</th>
+              <th>Tồn kho</th>
               <th>Hành động</th>
             </tr>
           </thead>
@@ -413,7 +425,7 @@
   </main>
 </div>
 
-<!-- DRAWER -->
+<!-- DRAWER (giữ nguyên) -->
 <div class="overlay hidden" id="detailOverlay"></div>
 <aside class="drawer hidden" id="detailDrawer">
   <div class="drawer-head">
@@ -983,7 +995,8 @@
         <td>${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" class="thumb" alt="${escapeHtml(p.name)}" />` : '-'}</td>
         <td><strong>${escapeHtml(p.name)}</strong></td>
         <td>${money(p.price)}</td>
-        <td>${p.stock !== undefined ? p.stock : '∞'}</td>
+        <td>${p.oldPrice ? money(p.oldPrice) : '-'}</td>
+        <td>${p.stock !== undefined && p.stock !== null ? p.stock : '-'}</td>
         <td class="actions">
           <button class="edit-pkg" data-key="${escapeHtml(p._key)}">✏️</button>
           <button class="delete-pkg" data-key="${escapeHtml(p._key)}">🗑️</button>
@@ -1000,7 +1013,8 @@
         editingPackageKey = key;
         $('pkgName').value = pkg.name || '';
         $('pkgPrice').value = pkg.price || '';
-        $('pkgStock').value = pkg.stock !== undefined ? pkg.stock : 999;
+        $('pkgOldPrice').value = pkg.oldPrice || '';
+        $('pkgStock').value = pkg.stock || '';
         $('pkgDesc').value = pkg.description || '';
         $('pkgImage').value = pkg.imageUrl || '';
         $('addPackageBtn').textContent = '💾 Cập nhật';
@@ -1026,7 +1040,8 @@
     $('addPackageBtn').addEventListener('click', function() {
       const name = $('pkgName').value.trim();
       const price = parseFloat($('pkgPrice').value);
-      const stock = parseInt($('pkgStock').value) || 999;
+      const oldPrice = parseFloat($('pkgOldPrice').value) || null;
+      const stock = parseInt($('pkgStock').value) || 0;
       const description = $('pkgDesc').value.trim();
       const imageUrl = $('pkgImage').value.trim();
 
@@ -1035,7 +1050,7 @@
         return;
       }
 
-      const data = { name, price, stock, description, imageUrl, updatedAt: new Date().toISOString() };
+      const data = { name, price, oldPrice, stock, description, imageUrl, updatedAt: new Date().toISOString() };
 
       if (editingPackageKey) {
         packagesRef.child(editingPackageKey).update(data)
@@ -1052,7 +1067,8 @@
   function resetPackageForm() {
     $('pkgName').value = '';
     $('pkgPrice').value = '';
-    $('pkgStock').value = '999';
+    $('pkgOldPrice').value = '';
+    $('pkgStock').value = '';
     $('pkgDesc').value = '';
     $('pkgImage').value = '';
     $('addPackageBtn').textContent = '➕ Thêm gói';
@@ -1076,7 +1092,6 @@
       return;
     }
     emptyProducts.classList.add('hidden');
-    // Sắp xếp theo priority (tăng dần)
     products.sort((a, b) => (a.priority || 999) - (b.priority || 999));
 
     products.forEach((p, index) => {
@@ -1086,8 +1101,9 @@
         <td>${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" class="thumb" alt="${escapeHtml(p.name)}" />` : '-'}</td>
         <td><strong>${escapeHtml(p.name)}</strong></td>
         <td>${money(p.price)}</td>
-        <td>${p.stock !== undefined ? p.stock : '∞'}</td>
+        <td>${p.oldPrice ? money(p.oldPrice) : '-'}</td>
         <td>${p.priority || '-'}</td>
+        <td>${p.stock !== undefined && p.stock !== null ? p.stock : '-'}</td>
         <td class="actions">
           <button class="edit-prod" data-key="${escapeHtml(p._key)}">✏️</button>
           <button class="delete-prod" data-key="${escapeHtml(p._key)}">🗑️</button>
@@ -1104,8 +1120,9 @@
         editingProductKey = key;
         $('prodName').value = prod.name || '';
         $('prodPrice').value = prod.price || '';
-        $('prodStock').value = prod.stock !== undefined ? prod.stock : 10;
+        $('prodOldPrice').value = prod.oldPrice || '';
         $('prodPriority').value = prod.priority || 10;
+        $('prodStock').value = prod.stock || '';
         $('prodDesc').value = prod.description || '';
         $('prodImage').value = prod.imageUrl || '';
         $('addProductBtn').textContent = '💾 Cập nhật';
@@ -1131,8 +1148,9 @@
     $('addProductBtn').addEventListener('click', function() {
       const name = $('prodName').value.trim();
       const price = parseFloat($('prodPrice').value);
-      const stock = parseInt($('prodStock').value) || 10;
+      const oldPrice = parseFloat($('prodOldPrice').value) || null;
       const priority = parseInt($('prodPriority').value) || 10;
+      const stock = parseInt($('prodStock').value) || 0;
       const description = $('prodDesc').value.trim();
       const imageUrl = $('prodImage').value.trim();
 
@@ -1141,7 +1159,7 @@
         return;
       }
 
-      const data = { name, price, stock, priority, description, imageUrl, updatedAt: new Date().toISOString() };
+      const data = { name, price, oldPrice, priority, stock, description, imageUrl, updatedAt: new Date().toISOString() };
 
       if (editingProductKey) {
         productsRef.child(editingProductKey).update(data)
@@ -1158,8 +1176,9 @@
   function resetProductForm() {
     $('prodName').value = '';
     $('prodPrice').value = '';
-    $('prodStock').value = '10';
+    $('prodOldPrice').value = '';
     $('prodPriority').value = '10';
+    $('prodStock').value = '';
     $('prodDesc').value = '';
     $('prodImage').value = '';
     $('addProductBtn').textContent = '➕ Thêm sản phẩm';
