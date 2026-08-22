@@ -8,7 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    /* --- GIỮ NGUYÊN CSS CŨ, CHỈ THÊM MỘT SỐ STYLE MỚI --- */
+    /* --- GIỮ NGUYÊN CSS CŨ, THÊM VÀI STYLE MỚI --- */
     :root {
       --bg: #060608;
       --panel: #111115;
@@ -44,7 +44,6 @@
     .items-section { margin-bottom: 40px; }
     .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
 
-    /* Card chung cho gói và sản phẩm */
     .item-card {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -71,31 +70,7 @@
     }
     .item-card .img-wrap:hover img { transform: scale(1.04); }
 
-    /* Gói: ẩn ảnh, hiển thị nút xem ảnh */
-    .item-card .img-wrap.package-img-wrap {
-      height: auto;
-      background: transparent;
-      cursor: default;
-      display: flex;
-      justify-content: center;
-      padding: 12px 0 6px;
-    }
-    .item-card .img-wrap.package-img-wrap .btn-view-images {
-      background: rgba(212,175,55,0.15);
-      border: 1px solid var(--gold);
-      color: var(--gold-light);
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .item-card .img-wrap.package-img-wrap .btn-view-images:hover {
-      background: rgba(212,175,55,0.25);
-      transform: scale(1.02);
-    }
-
+    /* Không còn dùng img-wrap cho gói nữa, ta dùng div riêng */
     .item-card .body { padding: 16px 18px 20px; }
     .item-card .body h3 {
       font-size: 18px;
@@ -117,6 +92,8 @@
       max-height: 40px;
       overflow: hidden;
       transition: max-height 0.4s ease;
+      white-space: pre-wrap;  /* Giữ xuống dòng từ admin */
+      word-wrap: break-word;
     }
     .item-card .body .desc.expanded {
       max-height: 500px;
@@ -133,6 +110,25 @@
       display: inline-block;
     }
     .item-card .body .desc-toggle:hover { opacity: 0.8; }
+
+    /* Nút xem ảnh mô tả (dành cho gói) */
+    .item-card .body .btn-view-images {
+      background: rgba(212,175,55,0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+      margin: 8px 0 10px;
+    }
+    .item-card .body .btn-view-images:hover {
+      background: rgba(212,175,55,0.25);
+      transform: scale(1.02);
+    }
 
     .item-card .body .price-row {
       display: flex;
@@ -154,6 +150,7 @@
     .item-card .body .stock {
       font-size: 13px;
       color: var(--muted);
+      margin-bottom: 8px;
     }
     .item-card .body .stock strong { color: #fff; }
 
@@ -661,7 +658,7 @@
   }
   loadProducts();
 
-  // ===== RENDER GÓI (không hiển thị ảnh, có nút xem ảnh) =====
+  // ===== RENDER GÓI (không hiển thị ảnh, có nút xem ảnh ở phía dưới, trên nút chọn gói) =====
   function renderPackages() {
     const container = document.getElementById('packagesContainer');
     container.innerHTML = '';
@@ -672,52 +669,32 @@
     packages.forEach(pkg => {
       const card = document.createElement('div');
       card.className = 'item-card';
-      // Ảnh không hiển thị, thay bằng nút xem ảnh
-      const imgHtml = pkg.imageUrl ? `
-        <div class="img-wrap package-img-wrap">
-          <button class="btn-view-images" data-image="${escapeHtml(pkg.imageUrl)}">
-            <i class="fas fa-image"></i> Hình ảnh mô tả
-          </button>
-        </div>
-      ` : `<div class="img-wrap package-img-wrap"><span style="color:var(--muted); font-size:13px;">Không có ảnh</span></div>`;
 
-      const priceHtml = pkg.oldPrice
-        ? `<span class="old-price">${money(pkg.oldPrice)}</span><span class="price">${money(pkg.price)}</span>`
-        : `<span class="price">${money(pkg.price)}</span>`;
+      // Body card
+      const body = document.createElement('div');
+      body.className = 'body';
 
-      const stockHtml = (pkg.stock !== undefined && pkg.stock !== null) ? `<div class="stock">Hiện có: <strong>${pkg.stock}</strong></div>` : '';
+      // Tên
+      const nameEl = document.createElement('h3');
+      nameEl.textContent = pkg.name || '';
+      body.appendChild(nameEl);
 
-      // Mô tả có nút xem thêm
+      // Mô tả (có nút xem thêm nếu dài)
+      const descWrap = document.createElement('div');
+      descWrap.className = 'desc-wrap';
       const desc = pkg.description || '';
       const descId = 'desc_' + pkg._key;
       const needToggle = desc.length > 80;
-      const descDisplay = needToggle ? `<div class="desc" id="${descId}">${escapeHtml(desc)}</div><button class="desc-toggle" data-target="${descId}">Xem thêm</button>` : `<div class="desc">${escapeHtml(desc)}</div>`;
-
-      card.innerHTML = `
-        ${imgHtml}
-        <div class="body">
-          <h3>${escapeHtml(pkg.name)}</h3>
-          <div class="desc-wrap">${descDisplay}</div>
-          <div class="price-row">${priceHtml}</div>
-          ${stockHtml}
-          <button class="btn-small buy-package" data-key="${escapeHtml(pkg._key)}">CHỌN GÓI</button>
-        </div>
-      `;
-      container.appendChild(card);
-
-      // Sự kiện nút xem ảnh
-      const viewBtn = card.querySelector('.btn-view-images');
-      if (viewBtn) {
-        viewBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const imgSrc = this.dataset.image;
-          if (imgSrc) openLightbox(imgSrc);
-        });
-      }
-
-      // Sự kiện xem thêm mô tả
-      const toggleBtn = card.querySelector('.desc-toggle');
-      if (toggleBtn) {
+      const descDiv = document.createElement('div');
+      descDiv.className = 'desc';
+      descDiv.id = descId;
+      descDiv.textContent = desc; // dùng textContent để giữ nguyên xuống dòng (pre-wrap trong CSS)
+      descWrap.appendChild(descDiv);
+      if (needToggle) {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'desc-toggle';
+        toggleBtn.dataset.target = descId;
+        toggleBtn.textContent = 'Xem thêm';
         toggleBtn.addEventListener('click', function() {
           const target = document.getElementById(this.dataset.target);
           if (target) {
@@ -725,22 +702,66 @@
             this.textContent = target.classList.contains('expanded') ? 'Thu gọn' : 'Xem thêm';
           }
         });
+        descWrap.appendChild(toggleBtn);
+      }
+      body.appendChild(descWrap);
+
+      // Nút "Hình ảnh mô tả" (nếu có ảnh) - đặt ở đây, trước giá và nút chọn gói
+      if (pkg.imageUrl) {
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'btn-view-images';
+        viewBtn.innerHTML = '<i class="fas fa-image"></i> Hình ảnh mô tả';
+        viewBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openLightbox(pkg.imageUrl);
+        });
+        body.appendChild(viewBtn);
       }
 
-      // Chọn gói
-      card.querySelector('.buy-package').addEventListener('click', function(e) {
+      // Giá
+      const priceRow = document.createElement('div');
+      priceRow.className = 'price-row';
+      if (pkg.oldPrice) {
+        const oldPriceSpan = document.createElement('span');
+        oldPriceSpan.className = 'old-price';
+        oldPriceSpan.textContent = money(pkg.oldPrice);
+        priceRow.appendChild(oldPriceSpan);
+      }
+      const priceSpan = document.createElement('span');
+      priceSpan.className = 'price';
+      priceSpan.textContent = money(pkg.price);
+      priceRow.appendChild(priceSpan);
+      body.appendChild(priceRow);
+
+      // Tồn kho
+      if (pkg.stock !== undefined && pkg.stock !== null) {
+        const stockDiv = document.createElement('div');
+        stockDiv.className = 'stock';
+        stockDiv.innerHTML = `Hiện có: <strong>${pkg.stock}</strong>`;
+        body.appendChild(stockDiv);
+      }
+
+      // Nút chọn gói
+      const buyBtn = document.createElement('button');
+      buyBtn.className = 'btn-small buy-package';
+      buyBtn.dataset.key = pkg._key;
+      buyBtn.textContent = 'CHỌN GÓI';
+      buyBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         const key = this.dataset.key;
         const pkg = packages.find(p => p._key === key);
         if (!pkg) return;
         selectedItemName = pkg.name;
         selectedItemPrice = pkg.price;
-        // Ẩn gói và sản phẩm, hiện form thông tin
         document.getElementById('section-packages-wrapper').style.display = 'none';
         document.getElementById('section-products-wrapper').style.display = 'none';
         document.getElementById('order-form-panel').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
+      body.appendChild(buyBtn);
+
+      card.appendChild(body);
+      container.appendChild(card);
     });
   }
 
@@ -759,45 +780,54 @@
     products.forEach(product => {
       const card = document.createElement('div');
       card.className = 'item-card';
-      const imgHtml = product.imageUrl
-        ? `<div class="img-wrap"><img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" /></div>`
-        : `<div class="img-wrap" style="background:#0a0a0f; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:14px;">Không có ảnh</div>`;
 
-      const priceHtml = product.oldPrice
-        ? `<span class="old-price">${money(product.oldPrice)}</span><span class="price">${money(product.price)}</span>`
-        : `<span class="price">${money(product.price)}</span>`;
-
-      const stockHtml = (product.stock !== undefined && product.stock !== null) ? `<div class="stock">Hiện có: <strong>${product.stock}</strong></div>` : '';
-
-      const desc = product.description || '';
-      const descId = 'desc_' + product._key;
-      const needToggle = desc.length > 80;
-      const descDisplay = needToggle ? `<div class="desc" id="${descId}">${escapeHtml(desc)}</div><button class="desc-toggle" data-target="${descId}">Xem thêm</button>` : `<div class="desc">${escapeHtml(desc)}</div>`;
-
-      card.innerHTML = `
-        ${imgHtml}
-        <div class="body">
-          <h3>${escapeHtml(product.name)}</h3>
-          <div class="desc-wrap">${descDisplay}</div>
-          <div class="price-row">${priceHtml}</div>
-          ${stockHtml}
-          <button class="btn-small buy-product" data-key="${escapeHtml(product._key)}">Mua ngay</button>
-        </div>
-      `;
-      container.appendChild(card);
-
-      // Lightbox cho ảnh sản phẩm
-      const img = card.querySelector('.img-wrap img');
-      if (img) {
+      // Ảnh (hiển thị sẵn)
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'img-wrap';
+      if (product.imageUrl) {
+        const img = document.createElement('img');
+        img.src = product.imageUrl;
+        img.alt = product.name || '';
         img.addEventListener('click', function(e) {
           e.stopPropagation();
           openLightbox(this.src);
         });
+        imgWrap.appendChild(img);
+      } else {
+        imgWrap.style.background = '#0a0a0f';
+        imgWrap.style.display = 'flex';
+        imgWrap.style.alignItems = 'center';
+        imgWrap.style.justifyContent = 'center';
+        imgWrap.style.color = 'var(--muted)';
+        imgWrap.style.fontSize = '14px';
+        imgWrap.textContent = 'Không có ảnh';
       }
+      card.appendChild(imgWrap);
 
-      // Xem thêm mô tả
-      const toggleBtn = card.querySelector('.desc-toggle');
-      if (toggleBtn) {
+      const body = document.createElement('div');
+      body.className = 'body';
+
+      // Tên
+      const nameEl = document.createElement('h3');
+      nameEl.textContent = product.name || '';
+      body.appendChild(nameEl);
+
+      // Mô tả + xem thêm
+      const descWrap = document.createElement('div');
+      descWrap.className = 'desc-wrap';
+      const desc = product.description || '';
+      const descId = 'desc_' + product._key;
+      const needToggle = desc.length > 80;
+      const descDiv = document.createElement('div');
+      descDiv.className = 'desc';
+      descDiv.id = descId;
+      descDiv.textContent = desc;
+      descWrap.appendChild(descDiv);
+      if (needToggle) {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'desc-toggle';
+        toggleBtn.dataset.target = descId;
+        toggleBtn.textContent = 'Xem thêm';
         toggleBtn.addEventListener('click', function() {
           const target = document.getElementById(this.dataset.target);
           if (target) {
@@ -805,10 +835,39 @@
             this.textContent = target.classList.contains('expanded') ? 'Thu gọn' : 'Xem thêm';
           }
         });
+        descWrap.appendChild(toggleBtn);
+      }
+      body.appendChild(descWrap);
+
+      // Giá
+      const priceRow = document.createElement('div');
+      priceRow.className = 'price-row';
+      if (product.oldPrice) {
+        const oldPriceSpan = document.createElement('span');
+        oldPriceSpan.className = 'old-price';
+        oldPriceSpan.textContent = money(product.oldPrice);
+        priceRow.appendChild(oldPriceSpan);
+      }
+      const priceSpan = document.createElement('span');
+      priceSpan.className = 'price';
+      priceSpan.textContent = money(product.price);
+      priceRow.appendChild(priceSpan);
+      body.appendChild(priceRow);
+
+      // Tồn kho
+      if (product.stock !== undefined && product.stock !== null) {
+        const stockDiv = document.createElement('div');
+        stockDiv.className = 'stock';
+        stockDiv.innerHTML = `Hiện có: <strong>${product.stock}</strong>`;
+        body.appendChild(stockDiv);
       }
 
-      // Mua sản phẩm -> mở modal
-      card.querySelector('.buy-product').addEventListener('click', function(e) {
+      // Nút mua
+      const buyBtn = document.createElement('button');
+      buyBtn.className = 'btn-small buy-product';
+      buyBtn.dataset.key = product._key;
+      buyBtn.textContent = 'Mua ngay';
+      buyBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         const key = this.dataset.key;
         const product = products.find(p => p._key === key);
@@ -825,6 +884,10 @@
         updateModalTotal();
         document.getElementById('orderModal').classList.add('active');
       });
+      body.appendChild(buyBtn);
+
+      card.appendChild(body);
+      container.appendChild(card);
     });
   }
 
