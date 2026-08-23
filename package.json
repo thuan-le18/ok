@@ -1,0 +1,12 @@
+{
+  "name": "tienban-bot",
+  "version": "1.0.0",
+  "description": "TIENBAN Bot Webhook",
+  "main": "api/webhook.js",
+  "scripts": {
+    "start": "node api/webhook.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.11.1"
+  }
+}
