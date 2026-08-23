@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ADMIN | Quản Lý Bot Telegram</title>
+  <title>ADMIN | Quản Lý Bot Telegram (Polling)</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
   <style>
-    /* GIỮ NGUYÊN CSS TỪ FILE TRƯỚC */
+    /* --- GIỮ NGUYÊN STYLE CŨ --- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #07080b; color: #f5f7fb; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; padding: 20px; }
     .container { max-width: 1200px; margin: 0 auto; }
@@ -67,20 +67,26 @@
     .drawer-header h3 { font-size: 18px; font-weight: 900; color: #fff; }
     .drawer-header .close { background: transparent; border: none; color: #98a0af; font-size: 28px; cursor: pointer; }
     .drawer-body { padding-top: 16px; }
-    .drawer-body .info-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,.03); }
-    .drawer-body .info-row .label { color: #98a0af; }
-    .drawer-body .info-row .value { color: #fff; font-weight: 600; word-break: break-all; }
-    .drawer-body .info-row .value a { color: #7db9ff; text-decoration: none; }
-    .drawer-body .info-row .value a:hover { text-decoration: underline; }
-    .chat-log { margin-top: 16px; }
+    .info-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,.03); }
+    .info-row .label { color: #98a0af; }
+    .info-row .value { color: #fff; font-weight: 600; word-break: break-all; }
+    .info-row .value a { color: #7db9ff; text-decoration: none; }
+    .info-row .value a:hover { text-decoration: underline; }
+
+    .chat-log { margin-top: 16px; max-height: 400px; overflow-y: auto; }
     .chat-log .msg { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.03); font-size: 13px; display: flex; gap: 8px; }
     .chat-log .msg .time { color: #98a0af; font-size: 11px; min-width: 50px; }
     .chat-log .msg .from { font-weight: 700; color: #7db9ff; min-width: 60px; }
     .chat-log .msg .text { color: #e5e7eb; word-break: break-word; }
 
+    .reply-area { margin-top: 12px; display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,.06); padding-top: 12px; }
+    .reply-area input { flex: 1; background: #090b10; color: #fff; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: 8px 12px; outline: none; font-size: 13px; }
+    .reply-area input:focus { border-color: rgba(212,175,55,.45); }
+    .reply-area button { background: linear-gradient(180deg, #fef08a, #d4af37); color: #111; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .reply-area button:hover { transform: scale(1.02); filter: brightness(1.05); }
+
     .btn-back { display: inline-block; margin-bottom: 12px; color: #98a0af; font-size: 13px; cursor: pointer; border: 1px solid rgba(255,255,255,.06); padding: 4px 14px; border-radius: 6px; transition: all .2s; }
     .btn-back:hover { color: #fff; border-color: rgba(255,255,255,.15); }
-
     .search-box { width: 100%; background: #090b10; color: #fff; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none; margin-bottom: 12px; }
     .search-box:focus { border-color: rgba(212,175,55,.45); }
 
@@ -100,7 +106,7 @@
   <div class="header">
     <div>
       <h1>🤖 Quản lý Bot</h1>
-      <span>Quản lý bot, người dùng và lịch sử chat</span>
+      <span>Polling tự động, xem và trả lời tin nhắn</span>
     </div>
     <a href="admin.html" style="color:#98a0af;font-size:14px;text-decoration:none;border:1px solid rgba(255,255,255,.08);padding:8px 16px;border-radius:8px;">
       ← Về Admin
@@ -117,7 +123,7 @@
     <div id="addStatus" class="status-msg"></div>
   </div>
 
-  <!-- Thống kê tổng -->
+  <!-- Thống kê -->
   <div class="card">
     <h3>📊 Tổng quan</h3>
     <div class="stats-summary">
@@ -132,19 +138,6 @@
     <h3>📋 Danh sách bot</h3>
     <div id="botListContainer" class="bot-list"></div>
   </div>
-
-  <!-- Hướng dẫn chạy bot -->
-  <div class="card" style="border-color:rgba(212,175,55,.15);">
-    <h3>🚀 Hướng dẫn chạy bot</h3>
-    <div style="font-size:13px;color:#98a0af;line-height:1.8;">
-      <p><strong>1.</strong> Tạo file <code>bot_runner.js</code> (xem code bên dưới).</p>
-      <p><strong>2.</strong> Cài Node.js, chạy <code>npm install node-telegram-bot-api firebase-admin</code>.</p>
-      <p><strong>3.</strong> Tải file <code>firebase-service-account.json</code> từ Firebase Console.</p>
-      <p><strong>4.</strong> Sửa <code>databaseURL</code> và link miniapp trong code.</p>
-      <p><strong>5.</strong> Chạy <code>node bot_runner.js</code>.</p>
-      <p style="margin-top:8px;color:#d4af37;">💡 Bot sẽ tự động chạy polling và xử lý /start, lưu user & log chat.</p>
-    </div>
-  </div>
 </div>
 
 <!-- OVERLAY & DRAWER -->
@@ -155,7 +148,7 @@
     <button class="close" id="closeDrawer">✕</button>
   </div>
   <div class="drawer-body" id="drawerBody">
-    <!-- Nội dung sẽ được render bằng JS -->
+    <!-- Nội dung sẽ render bằng JS -->
   </div>
 </div>
 
@@ -190,8 +183,11 @@
   // ===== GLOBAL =====
   let bots = {};
   let botUsers = {};
+  let botChatLogs = {};
   let botNames = {};
   let currentBotToken = null;
+  let currentUserId = null;
+  let pollingIntervals = {}; // lưu interval cho từng bot
 
   // ===== FUNCTIONS =====
   async function checkBotToken(token) {
@@ -203,17 +199,175 @@
     } catch (e) { return { ok: false }; }
   }
 
+  // Hàm gửi tin nhắn qua bot (dùng để trả lời)
+  async function sendMessageViaBot(botToken, chatId, text) {
+    try {
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: text })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        console.error('Lỗi gửi tin nhắn:', data);
+        return false;
+      }
+      // Lưu log tin nhắn bot vừa gửi
+      const logRef = db.ref(`bot_chat_logs/${botToken}/${chatId}`).push();
+      await logRef.set({
+        from: 'bot',
+        text: text,
+        timestamp: new Date().toISOString()
+      });
+      return true;
+    } catch (e) {
+      console.error('Lỗi gửi tin nhắn:', e);
+      return false;
+    }
+  }
+
+  // Polling: lấy tin nhắn mới cho một bot
+  async function pollBot(botToken) {
+    try {
+      // Lấy update_id cuối cùng đã xử lý từ Firebase
+      const offsetRef = db.ref(`bot_polling_offset/${botToken}`);
+      const snapshot = await offsetRef.once('value');
+      let offset = snapshot.val() || 0;
+
+      const url = `https://api.telegram.org/bot${botToken}/getUpdates?offset=${offset}&timeout=10`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data.ok) return;
+
+      if (data.result && data.result.length > 0) {
+        let maxUpdateId = offset;
+        for (const update of data.result) {
+          const updateId = update.update_id;
+          if (updateId > maxUpdateId) maxUpdateId = updateId;
+
+          // Xử lý tin nhắn
+          if (update.message) {
+            const msg = update.message;
+            const userId = msg.from.id;
+            const chatId = msg.chat.id;
+            const text = msg.text || '';
+
+            // Lưu log chat
+            const logRef = db.ref(`bot_chat_logs/${botToken}/${userId}`).push();
+            await logRef.set({
+              from: 'user',
+              text: text,
+              timestamp: new Date().toISOString()
+            });
+
+            // Nếu là /start -> lưu user
+            if (text === '/start') {
+              const userRef = db.ref(`bot_users/${botToken}/${userId}`);
+              const snap = await userRef.once('value');
+              if (!snap.exists()) {
+                await userRef.set({
+                  username: msg.from.username || '',
+                  first_name: msg.from.first_name || '',
+                  last_name: msg.from.last_name || '',
+                  started_at: new Date().toISOString()
+                });
+              }
+
+              // Gửi lời chào + nút mở miniapp
+              const keyboard = {
+                inline_keyboard: [[{
+                  text: '🚀 Mở ứng dụng',
+                  web_app: { url: 'https://t.me/Muatienbanbot/website' }
+                }]]
+              };
+              await sendMessageViaBotWithMarkup(botToken, chatId, 
+                `👋 Chào bạn ${msg.from.first_name || ''}!\n\nHãy bấm nút bên dưới để mở ứng dụng TIENBAN nhé.`,
+                keyboard
+              );
+            }
+          }
+        }
+
+        // Cập nhật offset
+        await offsetRef.set(maxUpdateId + 1);
+      }
+    } catch (e) {
+      console.error('Polling error:', e);
+    }
+  }
+
+  // Hàm gửi tin nhắn có reply_markup (cho nút miniapp)
+  async function sendMessageViaBotWithMarkup(botToken, chatId, text, replyMarkup) {
+    try {
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text, reply_markup: replyMarkup, parse_mode: 'HTML' })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        // Lưu log bot
+        const logRef = db.ref(`bot_chat_logs/${botToken}/${chatId}`).push();
+        await logRef.set({
+          from: 'bot',
+          text: text,
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (e) { console.error('Send message error:', e); }
+  }
+
+  // Bắt đầu polling cho một bot (mỗi 5 giây)
+  function startPolling(botToken) {
+    if (pollingIntervals[botToken]) {
+      clearInterval(pollingIntervals[botToken]);
+    }
+    // Chạy ngay lập tức
+    pollBot(botToken);
+    // Sau đó lặp mỗi 5 giây
+    pollingIntervals[botToken] = setInterval(() => pollBot(botToken), 5000);
+  }
+
+  // Dừng polling
+  function stopPolling(botToken) {
+    if (pollingIntervals[botToken]) {
+      clearInterval(pollingIntervals[botToken]);
+      delete pollingIntervals[botToken];
+    }
+  }
+
+  // ===== LOAD DATA =====
   function loadData() {
     db.ref('bots').on('value', snapshot => {
-      bots = snapshot.val() || {};
+      const newBots = snapshot.val() || {};
+      // So sánh để start/stop polling cho bot mới/bị xóa
+      const oldTokens = Object.keys(bots);
+      const newTokens = Object.keys(newBots);
+      // Dừng polling cho bot đã bị xóa
+      oldTokens.forEach(token => {
+        if (!newTokens.includes(token)) {
+          stopPolling(token);
+        }
+      });
+      // Bắt đầu polling cho bot mới
+      newTokens.forEach(token => {
+        if (!oldTokens.includes(token)) {
+          startPolling(token);
+        }
+      });
+      bots = newBots;
       renderBots();
       updateStats();
     });
+
     db.ref('bot_users').on('value', snapshot => {
       botUsers = snapshot.val() || {};
       renderBots();
       updateStats();
     });
+
     db.ref('bot_names').on('value', snapshot => {
       botNames = snapshot.val() || {};
       renderBots();
@@ -256,7 +410,7 @@
     sorted.forEach((token, index) => {
       const count = getBotUserCount(token);
       const name = botNames[token] || bots[token]?.name || token.substring(0, 10) + '...';
-      const isOnline = bots[token]?.online === true;
+      const isOnline = bots[token]?.online !== false;
       const rank = index + 1;
       html += `
         <div class="bot-item">
@@ -279,7 +433,6 @@
     });
     botListContainer.innerHTML = html;
 
-    // Sự kiện xem danh sách user
     botListContainer.querySelectorAll('.btn-users').forEach(btn => {
       btn.addEventListener('click', function() {
         const token = this.dataset.token;
@@ -287,13 +440,14 @@
       });
     });
 
-    // Xóa bot
     botListContainer.querySelectorAll('.delete-bot').forEach(btn => {
       btn.addEventListener('click', function() {
         const token = this.dataset.token;
         if (!confirm(`Xóa bot ${token.substring(0, 12)}...?`)) return;
+        stopPolling(token);
         db.ref(`bots/${token}`).remove();
         db.ref(`bot_names/${token}`).remove();
+        // Không xóa bot_users và chat_logs để giữ dữ liệu
         alert('✅ Đã xóa bot.');
       });
     });
@@ -351,23 +505,16 @@
     drawerOverlay.classList.add('active');
     userDrawer.classList.add('open');
 
-    // Tìm kiếm
-    const searchInput = document.getElementById('userSearch');
-    searchInput.addEventListener('input', function() {
+    document.getElementById('userSearch').addEventListener('input', function() {
       const q = this.value.toLowerCase().trim();
-      const items = document.querySelectorAll('.user-item');
-      items.forEach(item => {
+      document.querySelectorAll('.user-item').forEach(item => {
         const text = item.textContent.toLowerCase();
         item.style.display = text.includes(q) ? 'flex' : 'none';
       });
     });
 
-    // Quay lại
-    document.getElementById('closeUserList').addEventListener('click', function() {
-      closeDrawer();
-    });
+    document.getElementById('closeUserList').addEventListener('click', () => closeDrawer());
 
-    // Click vào user
     document.querySelectorAll('.user-item').forEach(item => {
       item.addEventListener('click', function() {
         const userId = this.dataset.userid;
@@ -379,6 +526,8 @@
 
   // ===== USER DETAIL =====
   async function openUserDetail(botToken, userId) {
+    currentBotToken = botToken;
+    currentUserId = userId;
     const userRef = db.ref(`bot_users/${botToken}/${userId}`);
     const snapshot = await userRef.once('value');
     const user = snapshot.val();
@@ -406,7 +555,7 @@
       <div class="info-row"><span class="label">Started at</span><span class="value">${escapeHtml(user.started_at ? new Date(user.started_at).toLocaleString('vi-VN') : '-')}</span></div>
       <div style="margin-top:12px;border-top:1px solid rgba(255,255,255,.06);padding-top:12px;">
         <strong style="color:#d4af37;">💬 Lịch sử chat (${logEntries.length} tin nhắn)</strong>
-        <div class="chat-log">
+        <div class="chat-log" id="chatLogContainer">
     `;
 
     if (!logEntries.length) {
@@ -426,11 +575,41 @@
       });
     }
 
-    html += `</div></div>`;
+    html += `
+        </div>
+      </div>
+      <div class="reply-area">
+        <input type="text" id="replyInput" placeholder="Nhập tin nhắn trả lời..." />
+        <button id="sendReplyBtn">Gửi</button>
+      </div>
+    `;
     drawerBody.innerHTML = html;
 
+    // Quay lại danh sách user
     document.getElementById('backToUserList').addEventListener('click', function() {
       openUserList(botToken);
+    });
+
+    // Gửi tin nhắn
+    const replyInput = document.getElementById('replyInput');
+    const sendBtn = document.getElementById('sendReplyBtn');
+
+    async function sendReply() {
+      const text = replyInput.value.trim();
+      if (!text) return;
+      const success = await sendMessageViaBot(botToken, userId, text);
+      if (success) {
+        replyInput.value = '';
+        // Làm mới lại log
+        openUserDetail(botToken, userId);
+      } else {
+        alert('❌ Gửi tin nhắn thất bại. Kiểm tra token bot hoặc kết nối.');
+      }
+    }
+
+    sendBtn.addEventListener('click', sendReply);
+    replyInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') sendReply();
     });
   }
 
@@ -465,9 +644,9 @@
     }
 
     try {
-      await db.ref(`bots/${token}`).set({ name: result.username || result.name, addedAt: new Date().toISOString(), online: false });
+      await db.ref(`bots/${token}`).set({ name: result.username || result.name, addedAt: new Date().toISOString(), online: true });
       await db.ref(`bot_names/${token}`).set(result.username || result.name);
-      addStatus.textContent = `✅ Đã thêm bot @${result.username}! Chạy bot_runner.js để kích hoạt.`;
+      addStatus.textContent = `✅ Đã thêm bot @${result.username} thành công! Polling sẽ tự động bắt đầu.`;
       addStatus.style.color = '#31c48d';
       botTokenInput.value = '';
     } catch (err) {
@@ -479,6 +658,23 @@
 
   // ===== KHỞI ĐỘNG =====
   loadData();
+
+  // Kiểm tra online mỗi 30s
+  setInterval(async () => {
+    const tokens = Object.keys(bots);
+    for (const token of tokens) {
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+        const data = await res.json();
+        const online = data.ok;
+        if (bots[token]?.online !== online) {
+          await db.ref(`bots/${token}/online`).set(online);
+        }
+      } catch (e) {
+        await db.ref(`bots/${token}/online`).set(false);
+      }
+    }
+  }, 30000);
 </script>
 </body>
 </html>
