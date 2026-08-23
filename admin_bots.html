@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
   <style>
-    /* GIỮ NGUYÊN CSS TỪ FILE TRƯỚC */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #07080b; color: #f5f7fb; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; padding: 20px; }
     .container { max-width: 1200px; margin: 0 auto; }
@@ -40,7 +39,7 @@
     .bot-info .name { font-weight: 700; font-size: 15px; color: #fff; }
     .bot-info .token { font-size: 12px; color: #98a0af; font-family: monospace; }
     .bot-info .count { background: rgba(212,175,55,.12); padding: 2px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #fef08a; }
-    .bot-actions { display: flex; gap: 8px; align-items: center; }
+    .bot-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .bot-actions button { background: transparent; border: none; color: #98a0af; font-size: 16px; cursor: pointer; padding: 4px 8px; transition: color .2s; border-radius: 6px; }
     .bot-actions button:hover { color: #ef5350; background: rgba(239,83,80,.08); }
     .bot-actions .status { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
@@ -48,6 +47,8 @@
     .bot-actions .status.offline { color: #ef5350; }
     .bot-actions .btn-users { color: #7db9ff; font-size: 13px; padding: 2px 10px; border: 1px solid rgba(125,185,255,.2); border-radius: 6px; }
     .bot-actions .btn-users:hover { background: rgba(125,185,255,.08); color: #a8d0ff; }
+    .bot-actions .btn-webhook { color: #fef08a; font-size: 13px; padding: 2px 10px; border: 1px solid rgba(212,175,55,.2); border-radius: 6px; }
+    .bot-actions .btn-webhook:hover { background: rgba(212,175,55,.08); color: #fff; }
 
     .empty-state { color: #98a0af; text-align: center; padding: 30px 20px; font-size: 14px; }
 
@@ -83,6 +84,10 @@
 
     .search-box { width: 100%; background: #090b10; color: #fff; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none; margin-bottom: 12px; }
     .search-box:focus { border-color: rgba(212,175,55,.45); }
+
+    .webhook-status { font-size: 12px; color: #98a0af; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,.04); }
+    .webhook-status.active { color: #31c48d; }
+    .webhook-status.inactive { color: #ef5350; }
 
     @media (max-width: 600px) {
       .bot-form input { min-width: 100%; }
@@ -133,16 +138,14 @@
     <div id="botListContainer" class="bot-list"></div>
   </div>
 
-  <!-- Hướng dẫn chạy bot -->
+  <!-- Hướng dẫn -->
   <div class="card" style="border-color:rgba(212,175,55,.15);">
-    <h3>🚀 Hướng dẫn chạy bot</h3>
+    <h3>🔧 Cài đặt Webhook</h3>
     <div style="font-size:13px;color:#98a0af;line-height:1.8;">
-      <p><strong>1.</strong> Tạo file <code>bot_runner.js</code> (xem code bên dưới).</p>
-      <p><strong>2.</strong> Cài Node.js, chạy <code>npm install node-telegram-bot-api firebase-admin</code>.</p>
-      <p><strong>3.</strong> Tải file <code>firebase-service-account.json</code> từ Firebase Console.</p>
-      <p><strong>4.</strong> Sửa <code>databaseURL</code> và link miniapp trong code.</p>
-      <p><strong>5.</strong> Chạy <code>node bot_runner.js</code>.</p>
-      <p style="margin-top:8px;color:#d4af37;">💡 Bot sẽ tự động chạy polling và xử lý /start, lưu user & log chat.</p>
+      <p><strong>1.</strong> Deploy code lên Vercel với file <code>api/webhook.js</code>.</p>
+      <p><strong>2.</strong> Thêm biến môi trường: <code>FIREBASE_SERVICE_ACCOUNT</code>, <code>FIREBASE_DATABASE_URL</code>, <code>MINIAPP_URL</code>.</p>
+      <p><strong>3.</strong> Bấm nút <strong>🔗 Webhook</strong> bên cạnh bot để cài webhook tự động.</p>
+      <p style="margin-top:8px;color:#d4af37;">💡 Bot sẽ nhận tin nhắn qua webhook và xử lý /start + lưu log.</p>
     </div>
   </div>
 </div>
@@ -191,7 +194,6 @@
   let bots = {};
   let botUsers = {};
   let botNames = {};
-  let currentBotToken = null;
 
   // ===== FUNCTIONS =====
   async function checkBotToken(token) {
@@ -201,6 +203,14 @@
       if (data.ok) return { ok: true, username: data.result.username, name: data.result.first_name };
       return { ok: false };
     } catch (e) { return { ok: false }; }
+  }
+
+  async function getWebhookInfo(token) {
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/getWebhookInfo`);
+      const data = await res.json();
+      return data.ok ? data.result : null;
+    } catch { return null; }
   }
 
   function loadData() {
@@ -253,13 +263,16 @@
     }
     const sorted = tokens.sort((a, b) => getBotUserCount(b) - getBotUserCount(a));
     let html = '';
-    sorted.forEach((token, index) => {
+    sorted.forEach(async (token, index) => {
       const count = getBotUserCount(token);
       const name = botNames[token] || bots[token]?.name || token.substring(0, 10) + '...';
       const isOnline = bots[token]?.online === true;
       const rank = index + 1;
+      // Lấy webhook info (sẽ render sau khi có)
+      const webhookInfo = await getWebhookInfo(token);
+      const webhookStatus = webhookInfo && webhookInfo.url ? 'active' : 'inactive';
       html += `
-        <div class="bot-item">
+        <div class="bot-item" data-token="${escapeHtml(token)}">
           <div class="bot-info">
             <span class="rank">#${rank}</span>
             <span class="name">${escapeHtml(name)}</span>
@@ -271,7 +284,12 @@
               <i class="ri-${isOnline ? 'checkbox-circle-fill' : 'close-circle-fill'}"></i>
               ${isOnline ? 'Online' : 'Offline'}
             </span>
-            <button class="btn-users" data-token="${escapeHtml(token)}"><i class="fas fa-list-ul"></i> Users</button>
+            <span class="webhook-status ${webhookStatus}">
+              <i class="fas fa-${webhookStatus === 'active' ? 'check-circle' : 'exclamation-circle'}"></i>
+              ${webhookStatus === 'active' ? 'Webhook' : 'Chưa cài'}
+            </span>
+            <button class="btn-users" data-token="${escapeHtml(token)}"><i class="fas fa-list-ul"></i></button>
+            <button class="btn-webhook" data-token="${escapeHtml(token)}"><i class="fas fa-link"></i></button>
             <button class="delete-bot" data-token="${escapeHtml(token)}"><i class="fas fa-trash-alt"></i></button>
           </div>
         </div>
@@ -279,7 +297,7 @@
     });
     botListContainer.innerHTML = html;
 
-    // Sự kiện xem danh sách user
+    // Sự kiện
     botListContainer.querySelectorAll('.btn-users').forEach(btn => {
       btn.addEventListener('click', function() {
         const token = this.dataset.token;
@@ -287,7 +305,23 @@
       });
     });
 
-    // Xóa bot
+    botListContainer.querySelectorAll('.btn-webhook').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const token = this.dataset.token;
+        const domain = prompt('Nhập domain Vercel (ví dụ: your-domain.vercel.app):', '');
+        if (!domain) return;
+        const webhookUrl = `https://${domain}/api/webhook?token=${token}`;
+        try {
+          const res = await fetch(`https://api.telegram.org/bot${token}/setWebhook?url=${encodeURIComponent(webhookUrl)}`);
+          const data = await res.json();
+          alert(data.ok ? '✅ Webhook đã được cài!' : '❌ Lỗi: ' + data.description);
+          if (data.ok) renderBots(); // Refresh
+        } catch (e) {
+          alert('❌ Lỗi kết nối: ' + e.message);
+        }
+      });
+    });
+
     botListContainer.querySelectorAll('.delete-bot').forEach(btn => {
       btn.addEventListener('click', function() {
         const token = this.dataset.token;
@@ -313,7 +347,6 @@
 
   // ===== USER LIST =====
   function openUserList(botToken) {
-    currentBotToken = botToken;
     const users = botUsers[botToken] || {};
     const userIds = Object.keys(users);
     if (!userIds.length) {
@@ -351,7 +384,6 @@
     drawerOverlay.classList.add('active');
     userDrawer.classList.add('open');
 
-    // Tìm kiếm
     const searchInput = document.getElementById('userSearch');
     searchInput.addEventListener('input', function() {
       const q = this.value.toLowerCase().trim();
@@ -362,12 +394,10 @@
       });
     });
 
-    // Quay lại
     document.getElementById('closeUserList').addEventListener('click', function() {
       closeDrawer();
     });
 
-    // Click vào user
     document.querySelectorAll('.user-item').forEach(item => {
       item.addEventListener('click', function() {
         const userId = this.dataset.userid;
@@ -467,7 +497,7 @@
     try {
       await db.ref(`bots/${token}`).set({ name: result.username || result.name, addedAt: new Date().toISOString(), online: false });
       await db.ref(`bot_names/${token}`).set(result.username || result.name);
-      addStatus.textContent = `✅ Đã thêm bot @${result.username}! Chạy bot_runner.js để kích hoạt.`;
+      addStatus.textContent = `✅ Đã thêm bot @${result.username}!`;
       addStatus.style.color = '#31c48d';
       botTokenInput.value = '';
     } catch (err) {
