@@ -1093,7 +1093,7 @@
       const timeText = minutes < 1 ? 'vài giây trước' : `${minutes} phút trước`;
       const div = document.createElement('div');
       div.className = 'recent-item';
-      const fakeBadge = o.isFake ? `<span class="fake-badge">(demo)</span>` : '';
+      const fakeBadge = o.isFake ? `<span class="fake-badge"> </span>` : '';
       div.innerHTML = `
         <span class="action">Người dùng ẩn danh đã mua <strong>${escapeHtml(o.packageName)}</strong> ${fakeBadge}</span>
         <span class="time">${timeText}</span>
