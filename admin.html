@@ -7,7 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
-    /* --- GIỮ NGUYÊN CSS CŨ, CHỈ THÊM MỘT SỐ STYLE MỚI --- */
+    /* ===== GIỮ NGUYÊN CSS CŨ, CHỈ THÊM VÀI STYLE MỚI ===== */
     :root {
       --bg: #07080b;
       --panel: #0f1117;
@@ -29,7 +29,6 @@
     button { cursor: pointer; }
     .hidden { display: none !important; }
 
-    /* ===== LOGIN (giữ nguyên) ===== */
     .login-screen { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at 50% 0%, rgba(212,175,55,.08), transparent 35%), linear-gradient(180deg, #08090d 0%, #050609 100%); }
     .login-card { width: min(420px, 100%); background: rgba(15,17,23,.94); border: 1px solid var(--border); border-radius: 24px; padding: 34px; box-shadow: var(--shadow); backdrop-filter: blur(18px); }
     .brand { text-align: center; margin-bottom: 28px; }
@@ -46,7 +45,6 @@
     .btn-primary:hover { transform: translateY(-1px); }
     .login-note { margin: 16px 0 0; text-align: center; color: var(--muted); font-size: 12px; }
 
-    /* ===== ADMIN APP ===== */
     .admin-app { min-height: 100vh; display: grid; grid-template-columns: 200px 1fr; }
     .sidebar { position: sticky; top: 0; height: 100vh; padding: 20px 14px; background: #0a0c11; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; }
     .side-brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
@@ -62,20 +60,17 @@
     .admin-account strong { display: block; margin-top: 2px; font-size: 12px; }
     .btn-logout { width: 100%; background: #161a23; color: #d8dde7; border: 1px solid var(--border); padding: 10px; font-size: 13px; }
 
-    /* ===== MAIN CONTENT ===== */
     .main { min-width: 0; padding: 20px; }
     .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
     .topbar h2 { margin: 0; font-size: 22px; font-weight: 950; letter-spacing: -.02em; }
     .topbar p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
 
-    /* ===== STATS ===== */
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
     .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); }
     .stat-label { color: var(--muted); font-size: 10px; font-weight: 750; text-transform: uppercase; letter-spacing: .04em; }
     .stat-value { margin-top: 4px; font-size: 24px; font-weight: 950; }
     .stat-meta { margin-top: 2px; color: #aeb5c2; font-size: 10px; }
 
-    /* ===== CHART 7 DAYS ===== */
     .chart-section { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 18px; }
     .chart-section h3 { color: var(--gold); font-size: 15px; font-weight: 900; margin: 0 0 12px; }
     .chart-bars { display: flex; justify-content: space-around; align-items: flex-end; height: 120px; gap: 6px; }
@@ -84,13 +79,11 @@
     .chart-bar-label { margin-top: 6px; font-size: 9px; color: var(--muted); font-weight: 700; text-align: center; }
     .chart-bar-count { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 2px; }
 
-    /* ===== CONTROLS ===== */
     .controls { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; display: grid; grid-template-columns: minmax(140px, 1fr) 120px 120px 100px auto; gap: 8px; margin-bottom: 12px; }
     .control { min-width: 0; }
     .control label { display: block; margin-bottom: 4px; color: var(--muted); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
     .select, .search { width: 100%; background: #090b10; color: #edf0f5; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; outline: none; font-size: 12px; }
 
-    /* ===== TABLE ===== */
     .table-wrap { overflow: auto; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); }
     table { width: 100%; min-width: 1100px; border-collapse: collapse; }
     th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.05); white-space: nowrap; font-size: 12px; }
@@ -111,7 +104,6 @@
     .btn-view:hover { border-color: rgba(212,175,55,.3); }
     .empty-state { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 13px; }
 
-    /* ===== DRAWER ===== */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.68); backdrop-filter: blur(6px); z-index: 50; }
     .drawer { position: fixed; top: 0; right: 0; width: min(560px, 100%); height: 100vh; background: #0b0e14; border-left: 1px solid var(--border); z-index: 60; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,.42); }
     .drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--border); }
@@ -135,9 +127,10 @@
     .btn-danger-outline:hover { background: rgba(239,83,80,.15); }
     .btn-restore { color: #fff; background: #2c7be5; padding: 10px; font-size: 13px; }
     .btn-restore:hover { background: #1a68c7; }
+    .btn-forever-delete { color: #fff; background: #b91c1c; padding: 10px; font-size: 13px; border: none; border-radius: 12px; }
+    .btn-forever-delete:hover { background: #7f1d1d; }
     .security-note { padding: 10px; border-radius: 10px; background: rgba(96,165,250,.06); border: 1px solid rgba(96,165,250,.13); color: #a9c9f5; font-size: 10px; line-height: 1.6; }
 
-    /* ===== CONFIG & PRODUCT/PACKAGE MANAGEMENT ===== */
     .config-section { margin-top: 20px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
     .config-section h3 { color: var(--gold); margin: 0 0 12px; font-size: 15px; }
     .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -163,7 +156,14 @@
     .product-list .actions .edit:hover { color: var(--gold); }
     .product-list .actions .delete:hover { color: var(--danger); }
 
-    /* ===== RESPONSIVE ===== */
+    .recent-section { margin-top: 30px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+    .recent-section h3 { color: var(--gold); font-size: 15px; font-weight: 900; margin: 0 0 12px; }
+    .recent-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 13px; color: var(--muted); }
+    .recent-item:last-child { border-bottom: none; }
+    .recent-item .action { color: var(--text); }
+    .recent-item .time { color: var(--muted); font-size: 12px; }
+    .fake-badge { background: rgba(212,175,55,0.15); color: var(--gold); font-size: 9px; padding: 1px 8px; border-radius: 10px; margin-left: 6px; }
+
     @media (max-width: 1100px) { .stats { grid-template-columns: repeat(2, 1fr); } .controls { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 820px) {
       .admin-app { grid-template-columns: 1fr; }
@@ -192,7 +192,7 @@
 </head>
 <body>
 
-<!-- LOGIN (giữ nguyên) -->
+<!-- LOGIN -->
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">
@@ -239,7 +239,6 @@
   </aside>
 
   <main class="main">
-    <!-- TOPBAR -->
     <div class="topbar">
       <div>
         <h2>📋 Quản lý đơn hàng</h2>
@@ -302,30 +301,12 @@
     <section class="config-section" id="packagesSection" style="display:none;">
       <h3>📦 Quản lý gói giao dịch</h3>
       <div class="product-form" id="packageForm">
-        <div class="full">
-          <label>Tên gói</label>
-          <input type="text" id="pkgName" placeholder="GÓI 6M" />
-        </div>
-        <div>
-          <label>Giá (VND)</label>
-          <input type="number" id="pkgPrice" placeholder="1000000" />
-        </div>
-        <div>
-          <label>Giá gốc (VND) – để trống nếu không có khuyến mãi</label>
-          <input type="number" id="pkgOldPrice" placeholder="1500000" />
-        </div>
-        <div>
-          <label>Tồn kho</label>
-          <input type="number" id="pkgStock" placeholder="999" />
-        </div>
-        <div class="full">
-          <label>Mô tả</label>
-          <textarea id="pkgDesc" placeholder="Mô tả gói..."></textarea>
-        </div>
-        <div class="full">
-          <label>Link ảnh (dùng cho nút xem ảnh mô tả)</label>
-          <input type="text" id="pkgImage" placeholder="https://example.com/image.jpg" />
-        </div>
+        <div class="full"><label>Tên gói</label><input type="text" id="pkgName" placeholder="GÓI 6M" /></div>
+        <div><label>Giá (VND)</label><input type="number" id="pkgPrice" placeholder="1000000" /></div>
+        <div><label>Giá gốc (VND) – để trống nếu không có khuyến mãi</label><input type="number" id="pkgOldPrice" placeholder="1500000" /></div>
+        <div><label>Tồn kho</label><input type="number" id="pkgStock" placeholder="999" /></div>
+        <div class="full"><label>Mô tả</label><textarea id="pkgDesc" placeholder="Mô tả gói..."></textarea></div>
+        <div class="full"><label>Link ảnh (dùng cho nút xem ảnh mô tả)</label><input type="text" id="pkgImage" placeholder="https://example.com/image.jpg" /></div>
         <div class="full" style="display:flex; gap:12px;">
           <button class="btn btn-primary" id="addPackageBtn">➕ Thêm gói</button>
           <button class="btn btn-danger-outline hidden" id="cancelEditPkgBtn">Hủy sửa</button>
@@ -333,17 +314,7 @@
       </div>
       <div class="product-list">
         <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Ảnh</th>
-              <th>Tên</th>
-              <th>Giá</th>
-              <th>Giá gốc</th>
-              <th>Tồn kho</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
+          <thead><tr><th>#</th><th>Ảnh</th><th>Tên</th><th>Giá</th><th>Giá gốc</th><th>Tồn kho</th><th>Hành động</th></tr></thead>
           <tbody id="packageTableBody"></tbody>
         </table>
         <div class="empty-state hidden" id="emptyPackages">Chưa có gói nào.</div>
@@ -354,34 +325,13 @@
     <section class="config-section" id="productsSection" style="display:none;">
       <h3>🛒 Quản lý sản phẩm</h3>
       <div class="product-form" id="productForm">
-        <div class="full">
-          <label>Tên sản phẩm</label>
-          <input type="text" id="prodName" placeholder="Ví dụ: iPhone 7 Jailbreak" />
-        </div>
-        <div>
-          <label>Giá (VND)</label>
-          <input type="number" id="prodPrice" placeholder="7000000" />
-        </div>
-        <div>
-          <label>Giá gốc (VND) – để trống nếu không có khuyến mãi</label>
-          <input type="number" id="prodOldPrice" placeholder="10000000" />
-        </div>
-        <div>
-          <label>Ưu tiên (số nhỏ trước)</label>
-          <input type="number" id="prodPriority" placeholder="1" value="10" />
-        </div>
-        <div>
-          <label>Tồn kho</label>
-          <input type="number" id="prodStock" placeholder="999" />
-        </div>
-        <div class="full">
-          <label>Mô tả</label>
-          <textarea id="prodDesc" placeholder="Mô tả chi tiết sản phẩm..."></textarea>
-        </div>
-        <div class="full">
-          <label>Link ảnh (hiển thị sẵn)</label>
-          <input type="text" id="prodImage" placeholder="https://example.com/image.jpg" />
-        </div>
+        <div class="full"><label>Tên sản phẩm</label><input type="text" id="prodName" placeholder="Ví dụ: iPhone 7 Jailbreak" /></div>
+        <div><label>Giá (VND)</label><input type="number" id="prodPrice" placeholder="7000000" /></div>
+        <div><label>Giá gốc (VND) – để trống nếu không có khuyến mãi</label><input type="number" id="prodOldPrice" placeholder="10000000" /></div>
+        <div><label>Ưu tiên (số nhỏ trước)</label><input type="number" id="prodPriority" placeholder="1" value="10" /></div>
+        <div><label>Tồn kho</label><input type="number" id="prodStock" placeholder="999" /></div>
+        <div class="full"><label>Mô tả</label><textarea id="prodDesc" placeholder="Mô tả chi tiết sản phẩm..."></textarea></div>
+        <div class="full"><label>Link ảnh (hiển thị sẵn)</label><input type="text" id="prodImage" placeholder="https://example.com/image.jpg" /></div>
         <div class="full" style="display:flex; gap:12px;">
           <button class="btn btn-primary" id="addProductBtn">➕ Thêm sản phẩm</button>
           <button class="btn btn-danger-outline hidden" id="cancelEditProdBtn">Hủy sửa</button>
@@ -389,27 +339,16 @@
       </div>
       <div class="product-list">
         <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Ảnh</th>
-              <th>Tên</th>
-              <th>Giá</th>
-              <th>Giá gốc</th>
-              <th>Ưu tiên</th>
-              <th>Tồn kho</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
+          <thead><tr><th>#</th><th>Ảnh</th><th>Tên</th><th>Giá</th><th>Giá gốc</th><th>Ưu tiên</th><th>Tồn kho</th><th>Hành động</th></tr></thead>
           <tbody id="productTableBody"></tbody>
         </table>
         <div class="empty-state hidden" id="emptyProducts">Chưa có sản phẩm nào.</div>
       </div>
     </section>
 
-    <!-- CONFIG -->
+    <!-- CONFIG + CRON -->
     <section class="config-section" id="configSection" style="display:none;">
-      <h3>⚙️ Cài đặt thông tin nhận tiền</h3>
+      <h3>⚙️ Cài đặt thông tin nhận tiền & Cron</h3>
       <div class="config-grid">
         <div><label style="color:var(--muted);font-size:10px;font-weight:700;">Mã ngân hàng</label><input type="text" id="cfgBankCode" class="input" value="MB" /></div>
         <div><label style="color:var(--muted);font-size:10px;font-weight:700;">Số tài khoản</label><input type="text" id="cfgAccountNumber" class="input" value="VQRQAKKMJ5126" /></div>
@@ -419,13 +358,20 @@
         <div class="config-checkbox"><label><input type="checkbox" id="cfgAutoRate" checked /> 🔄 Tự động lấy tỷ giá USDT (CoinGecko)</label><small>(Bỏ chọn để dùng tỷ giá thủ công)</small></div>
         <div><label style="color:var(--muted);font-size:10px;font-weight:700;">Token Telegram Bot</label><input type="text" id="cfgTelegramToken" class="input" placeholder="123456:ABC-DEF..." /></div>
         <div><label style="color:var(--muted);font-size:10px;font-weight:700;">Chat ID Telegram</label><input type="text" id="cfgTelegramChatId" class="input" placeholder="123456789" /></div>
+        <div><label style="color:var(--muted);font-size:10px;font-weight:700;">Khoảng cách đơn ảo (phút)</label><input type="number" id="cfgFakeInterval" class="input" placeholder="30" value="30" /></div>
         <div style="display:flex; align-items:end; grid-column: span 2;"><button class="btn btn-primary" id="saveConfigBtn" style="width:100%;padding:8px;font-size:13px;">Lưu cài đặt</button></div>
       </div>
+    </section>
+
+    <!-- RECENT ORDERS (admin) -->
+    <section class="recent-section" id="recentSection">
+      <h3>🕐 Đơn hàng gần đây</h3>
+      <div id="recentList"></div>
     </section>
   </main>
 </div>
 
-<!-- DRAWER (giữ nguyên) -->
+<!-- DRAWER -->
 <div class="overlay hidden" id="detailOverlay"></div>
 <aside class="drawer hidden" id="detailDrawer">
   <div class="drawer-head">
@@ -446,7 +392,7 @@
         <div class="detail-item"><span>Thanh toán</span><strong id="detailMethod">-</strong></div>
         <div class="detail-item"><span>Trạng thái</span><strong id="detailStatus">-</strong></div>
         <div class="detail-item full"><span>IP khách hàng</span><strong id="detailIp">-</strong></div>
-        <div class="detail-item full"><span>Fingerprint (Thiết bị)</span><strong id="detailFp">-</strong></div>
+        <div class="detail-item full"><span>Fingerprint</span><strong id="detailFp">-</strong></div>
         <div class="detail-item full"><span>Telegram liên hệ</span><strong id="detailTelegramFull">-</strong></div>
       </div>
     </section>
@@ -474,15 +420,13 @@
         <div class="detail-item full"><span>Transaction Hash</span><strong id="detailTxHash">-</strong></div>
       </div>
     </section>
-    <section class="detail-section">
-      <div class="security-note">Thông tin chỉ hiển thị cho admin đã xác thực.</div>
-    </section>
+    <section class="detail-section"><div class="security-note">Thông tin chỉ hiển thị cho admin đã xác thực.</div></section>
     <section class="drawer-actions" id="drawerActions"></section>
   </div>
 </aside>
 
 <script>
-  // ===== FIREBASE CONFIG =====
+  // ===== FIREBASE =====
   const firebaseConfig = {
     apiKey: "AIzaSy...",
     authDomain: "checktime-3a697.firebaseapp.com",
@@ -493,45 +437,25 @@
     appId: "1:123456789:web:abcdef"
   };
   firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-  const ordersRef = database.ref('orders');
-  const configRef = database.ref('config');
-  const packagesRef = database.ref('packages');
-  const productsRef = database.ref('products');
+  const db = firebase.database();
+  const ordersRef = db.ref('orders');
+  const configRef = db.ref('config');
+  const packagesRef = db.ref('packages');
+  const productsRef = db.ref('products');
 
-  // ===== GLOBAL =====
-  let orders = [];
-  let packages = [];
-  let products = [];
-  let currentOrder = null;
-  let editingPackageKey = null;
-  let editingProductKey = null;
-
+  // ===== HELPERS =====
   const $ = id => document.getElementById(id);
-  const loginScreen = $('loginScreen');
-  const adminApp = $('adminApp');
-  const loginForm = $('loginForm');
-  const loginError = $('loginError');
-  const tableBody = $('orderTableBody');
-  const emptyState = $('emptyState');
-  const detailOverlay = $('detailOverlay');
-  const detailDrawer = $('detailDrawer');
-  const drawerActions = $('drawerActions');
-  const packageTableBody = $('packageTableBody');
-  const emptyPackages = $('emptyPackages');
-  const productTableBody = $('productTableBody');
-  const emptyProducts = $('emptyProducts');
-
-  // ===== UTILITY =====
-  function money(v) { return Number(v || 0).toLocaleString('vi-VN') + ' VNĐ'; }
-  function usdtDisplay(v) { return Number(v || 0).toFixed(2) + ' USDT'; }
-  function formatDate(v) {
+  function money(v) { return Number(v||0).toLocaleString('vi-VN') + ' VNĐ'; }
+  function usdtDisplay(v) { return Number(v||0).toFixed(2) + ' USDT'; }
+  function fmtDate(v) {
     if (!v) return '-';
     const d = new Date(v);
     if (isNaN(d.getTime())) return v;
-    return new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(d);
+    return new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }).format(d);
   }
-  function methodLabel(m) { return m === 'usdt' ? 'USDT' : 'Ngân hàng'; }
+  function escapeHtml(v) { return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+  function calcUsdt(amount, rate) { if (!rate || rate <= 0) return 0; return amount / rate; }
+  function isDeleted(o) { return o.deletedAt && o.deletedAt !== undefined; }
   function statusLabel(s) {
     if (s === 'paid') return 'Đã xác nhận';
     if (s === 'cancelled') return 'Đã từ chối';
@@ -544,179 +468,126 @@
     if (s === 'deleted') return 'deleted';
     return 'pending';
   }
-  function escapeHtml(v) { return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
-  function calcUsdt(amount, rate) { if (!rate || rate <= 0) return 0; return amount / rate; }
-  function isDeleted(order) { return order.deletedAt && order.deletedAt !== undefined; }
+  function methodLabel(m) { return m === 'usdt' ? 'USDT' : 'Ngân hàng'; }
+
+  // ===== GLOBAL =====
+  let orders = [], packages = [], products = [], currentOrder = null;
+  let editingPackageKey = null, editingProductKey = null;
 
   // ===== LOGIN =====
   async function checkLogin(username, password) {
     try {
-      const snapshot = await configRef.child('admin').once('value');
-      const adminData = snapshot.val();
-      if (adminData) {
-        const storedUsername = adminData.username || 'Hxan1d123w';
-        const storedPassword = adminData.password || 'Hxan1d123w';
-        return username === storedUsername && password === storedPassword;
-      } else {
-        if (username === 'Hxan1d123w' && password === 'Hxan1d123w') {
-          await configRef.child('admin').set({ username: 'Hxan1d123w', password: 'Hxan1d123w' });
-          return true;
-        }
-        return false;
+      const snap = await configRef.child('admin').once('value');
+      const data = snap.val();
+      if (data) {
+        return username === data.username && password === data.password;
+      } else if (username === 'Hxan1d123w' && password === 'Hxan1d123w') {
+        await configRef.child('admin').set({ username: 'Hxan1d123w', password: 'Hxan1d123w' });
+        return true;
       }
-    } catch (error) {
-      console.error('Lỗi kiểm tra đăng nhập:', error);
-      return username === 'Hxan1d123w' && password === 'Hxan1d123w';
-    }
+      return false;
+    } catch { return username === 'Hxan1d123w' && password === 'Hxan1d123w'; }
   }
-
   $('togglePassword').addEventListener('click', function() {
     const pwd = $('adminPassword');
-    if (pwd.type === 'password') { pwd.type = 'text'; this.textContent = '🙈'; }
-    else { pwd.type = 'password'; this.textContent = '👁️'; }
+    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    this.textContent = pwd.type === 'password' ? '👁️' : '🙈';
   });
-
   loginForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     const username = $('adminUsername').value.trim();
     const password = $('adminPassword').value;
     loginError.classList.add('hidden');
     if (!username || !password) {
-      loginError.textContent = 'Vui lòng nhập đầy đủ tài khoản và mật khẩu.';
-      loginError.classList.remove('hidden');
-      return;
+      loginError.textContent = 'Vui lòng nhập đầy đủ.';
+      loginError.classList.remove('hidden'); return;
     }
-    const valid = await checkLogin(username, password);
-    if (valid) {
+    if (await checkLogin(username, password)) {
       sessionStorage.setItem('admin_logged_in', '1');
       sessionStorage.setItem('admin_username', username);
       showAdmin();
-      return;
+    } else {
+      loginError.textContent = 'Sai tài khoản hoặc mật khẩu.';
+      loginError.classList.remove('hidden');
     }
-    loginError.textContent = 'Sai tài khoản hoặc mật khẩu.';
-    loginError.classList.remove('hidden');
   });
-
   $('logoutBtn').addEventListener('click', function() {
     sessionStorage.removeItem('admin_logged_in');
     sessionStorage.removeItem('admin_username');
     showLogin();
   });
-
   function isLoggedIn() { return sessionStorage.getItem('admin_logged_in') === '1'; }
-
   function showAdmin() {
     loginScreen.classList.add('hidden');
     adminApp.classList.remove('hidden');
     $('loggedAdmin').textContent = sessionStorage.getItem('admin_username') || 'admin';
-    listenOrders();
-    listenPackages();
-    listenProducts();
-    loadConfigToForm();
-    setupFilters();
-    setupPackageForm();
-    setupProductForm();
-    // Tab switching
+    listenOrders(); listenPackages(); listenProducts();
+    loadConfigToForm(); setupFilters(); setupPackageForm(); setupProductForm();
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         const tab = this.dataset.tab;
-        $('statsSection').style.display = 'none';
-        $('chartSection').style.display = 'none';
-        $('packagesSection').style.display = 'none';
-        $('productsSection').style.display = 'none';
-        $('configSection').style.display = 'none';
-        if (tab === 'packages') {
-          $('packagesSection').style.display = 'block';
-          renderPackages();
-          updatePackageFilter();
-        } else if (tab === 'products') {
-          $('productsSection').style.display = 'block';
-          renderProducts();
-        } else if (tab === 'config') {
-          $('configSection').style.display = 'block';
-        } else {
-          $('statsSection').style.display = 'grid';
-          $('chartSection').style.display = 'block';
-        }
+        ['statsSection','chartSection','packagesSection','productsSection','configSection'].forEach(id => $(id).style.display = 'none');
+        if (tab === 'packages') { $('packagesSection').style.display = 'block'; renderPackages(); updatePackageFilter(); }
+        else if (tab === 'products') { $('productsSection').style.display = 'block'; renderProducts(); }
+        else if (tab === 'config') { $('configSection').style.display = 'block'; }
+        else { $('statsSection').style.display = 'grid'; $('chartSection').style.display = 'block'; }
       });
     });
   }
-
-  function showLogin() {
-    adminApp.classList.add('hidden');
-    loginScreen.classList.remove('hidden');
-  }
+  function showLogin() { adminApp.classList.add('hidden'); loginScreen.classList.remove('hidden'); }
 
   // ===== ORDERS =====
   function listenOrders() {
-    ordersRef.on('value', snapshot => {
-      const data = snapshot.val();
-      orders = data ? Object.keys(data).map(key => ({ _key: key, ...data[key] })) : [];
-      renderStats();
-      renderChart();
-      renderOrders();
-      updatePackageFilter();
+    ordersRef.on('value', snap => {
+      const data = snap.val();
+      orders = data ? Object.keys(data).map(k => ({ _key: k, ...data[k] })) : [];
+      renderStats(); renderChart(); renderOrders(); renderRecent(); updatePackageFilter();
     });
   }
-
   function renderStats() {
-    const activeOrders = orders.filter(o => !isDeleted(o));
-    $('statTotal').textContent = activeOrders.length;
-    $('statPending').textContent = activeOrders.filter(o => o.status === 'pending').length;
-    $('statBank').textContent = activeOrders.filter(o => o.method === 'bank').length;
-    $('statUsdt').textContent = activeOrders.filter(o => o.method === 'usdt').length;
+    const active = orders.filter(o => !isDeleted(o));
+    $('statTotal').textContent = active.length;
+    $('statPending').textContent = active.filter(o => o.status === 'pending').length;
+    $('statBank').textContent = active.filter(o => o.method === 'bank').length;
+    $('statUsdt').textContent = active.filter(o => o.method === 'usdt').length;
   }
-
   function renderChart() {
     const now = new Date();
-    const labels = [];
-    const counts = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
+    const labels = [], counts = [];
+    for (let i=6; i>=0; i--) {
+      const d = new Date(now); d.setDate(d.getDate()-i);
       const key = d.toISOString().split('T')[0];
       labels.push(key.slice(5));
-      const count = orders.filter(o => {
-        if (isDeleted(o)) return false;
-        if (!o.createdAt) return false;
-        const d2 = new Date(o.createdAt);
-        return d2.toISOString().split('T')[0] === key;
-      }).length;
-      counts.push(count);
+      counts.push(orders.filter(o => !isDeleted(o) && o.createdAt && new Date(o.createdAt).toISOString().split('T')[0] === key).length);
     }
-    const max = Math.max(...counts, 1);
+    const max = Math.max(...counts,1);
     const container = $('chartBars');
     container.innerHTML = '';
     labels.forEach((label, idx) => {
-      const pct = (counts[idx] / max) * 100;
+      const pct = (counts[idx]/max)*100;
       const wrap = document.createElement('div');
       wrap.className = 'chart-bar-wrap';
-      wrap.innerHTML = `<div class="chart-bar-count">${counts[idx]}</div><div class="chart-bar" style="height:${Math.max(pct, 4)}%;"></div><div class="chart-bar-label">${label}</div>`;
+      wrap.innerHTML = `<div class="chart-bar-count">${counts[idx]}</div><div class="chart-bar" style="height:${Math.max(pct,4)}%;"></div><div class="chart-bar-label">${label}</div>`;
       container.appendChild(wrap);
     });
   }
-
   function updatePackageFilter() {
-    const pkgNames = [...new Set(orders.map(o => o.packageName).filter(Boolean))];
+    const names = [...new Set(orders.map(o => o.packageName).filter(Boolean))];
     const filter = $('packageFilter');
-    const current = filter.value;
+    const cur = filter.value;
     filter.innerHTML = '<option value="all">Tất cả</option>';
-    pkgNames.forEach(name => {
-      filter.innerHTML += `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
-    });
-    if (current && pkgNames.includes(current)) filter.value = current;
+    names.forEach(n => filter.innerHTML += `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`);
+    if (cur && names.includes(cur)) filter.value = cur;
   }
-
   function getFilteredOrders() {
     const search = $('searchInput').value.trim().toLowerCase();
     const method = $('methodFilter').value;
     const status = $('statusFilter').value;
     const pkg = $('packageFilter').value;
     return orders.filter(o => {
-      if (status === 'deleted') { if (!isDeleted(o)) return false; }
-      else { if (isDeleted(o)) return false; }
+      if (status === 'deleted' ? !isDeleted(o) : isDeleted(o)) return false;
       const text = [o.id, o.fullName, o.telegram, o.account, o.accountName, o.ip].join(' ').toLowerCase();
       if (search && !text.includes(search)) return false;
       if (method !== 'all' && o.method !== method) return false;
@@ -725,30 +596,29 @@
       return true;
     });
   }
-
   function renderOrders() {
     const filtered = getFilteredOrders();
     tableBody.innerHTML = '';
     if (!filtered.length) { emptyState.classList.remove('hidden'); return; }
     emptyState.classList.add('hidden');
     filtered.forEach(o => {
-      const tr = document.createElement('tr');
-      const tgLink = o.telegram ? 'https://t.me/' + o.telegram.replace(/^@/, '') : '#';
-      const usdtAmount = calcUsdt(o.amount, o.usdtRate);
-      const rateDisplay = o.usdtRate ? o.usdtRate.toLocaleString('vi-VN') + ' VND' : '-';
+      const tgLink = o.telegram ? 'https://t.me/' + o.telegram.replace(/^@/,'') : '#';
+      const usdtAmt = calcUsdt(o.amount, o.usdtRate);
+      const rate = o.usdtRate ? o.usdtRate.toLocaleString('vi-VN') + ' VND' : '-';
       const st = isDeleted(o) ? 'deleted' : (o.status || 'pending');
+      const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><input type="checkbox" class="order-checkbox" data-key="${escapeHtml(o._key)}" ${isDeleted(o) ? 'disabled' : ''} /></td>
-        <td><span class="order-id">#${escapeHtml(o.id)}</span></td>
+        <td><input type="checkbox" class="order-checkbox" data-key="${escapeHtml(o._key)}" ${isDeleted(o)?'disabled':''} /></td>
+        <td><span class="order-id">#${escapeHtml(o.id||'')}</span></td>
         <td>${escapeHtml(o.packageName)}</td>
         <td><span class="amount">${money(o.amount)}</span></td>
-        <td><span class="usdt-amount">${usdtDisplay(usdtAmount)}</span></td>
-        <td>${rateDisplay}</td>
-        <td><span class="method ${o.method}">${o.method === 'usdt' ? '₮' : '🏦'} ${escapeHtml(methodLabel(o.method))}</span></td>
-        <td>${escapeHtml(o.fullName || '-')}</td>
+        <td><span class="usdt-amount">${usdtDisplay(usdtAmt)}</span></td>
+        <td>${rate}</td>
+        <td><span class="method ${o.method}">${o.method==='usdt'?'₮':'🏦'} ${escapeHtml(methodLabel(o.method))}</span></td>
+        <td>${escapeHtml(o.fullName||'-')}</td>
         <td>${o.telegram ? `<a href="${tgLink}" target="_blank" style="color:#7db9ff;text-decoration:none;">${escapeHtml(o.telegram)}</a>` : '-'}</td>
-        <td>${escapeHtml(o.ip || '-')}</td>
-        <td>${escapeHtml(formatDate(o.createdAt))}</td>
+        <td>${escapeHtml(o.ip||'-')}</td>
+        <td>${escapeHtml(fmtDate(o.createdAt))}</td>
         <td><span class="status ${statusClass(st)}">${escapeHtml(statusLabel(st))}</span></td>
         <td><button class="btn-view" data-order-key="${escapeHtml(o._key)}">Xem</button></td>
       `;
@@ -766,62 +636,89 @@
       btn.addEventListener('click', handleViewDetail);
     });
   }
-
   function handleSelectAll(e) {
-    const checked = e.target.checked;
-    document.querySelectorAll('.order-checkbox:not([disabled])').forEach(cb => cb.checked = checked);
+    document.querySelectorAll('.order-checkbox:not([disabled])').forEach(cb => cb.checked = e.target.checked);
   }
-
   function handleCheckboxChange() {
-    const allCbs = document.querySelectorAll('.order-checkbox:not([disabled])');
-    const checkedCbs = document.querySelectorAll('.order-checkbox:not([disabled]):checked');
-    $('selectAll').checked = allCbs.length > 0 && allCbs.length === checkedCbs.length;
+    const all = document.querySelectorAll('.order-checkbox:not([disabled])');
+    const checked = document.querySelectorAll('.order-checkbox:not([disabled]):checked');
+    $('selectAll').checked = all.length > 0 && all.length === checked.length;
   }
-
   function handleViewDetail(e) {
     const key = e.currentTarget.dataset.orderKey;
     const order = orders.find(o => o._key === key);
     if (order) openDetails(order);
   }
-
   $('deleteSelectedBtn').addEventListener('click', function() {
-    const checkedBoxes = document.querySelectorAll('.order-checkbox:checked:not([disabled])');
-    if (checkedBoxes.length === 0) { alert('Vui lòng chọn ít nhất một đơn chưa xóa để chuyển vào thùng rác.'); return; }
-    const keys = Array.from(checkedBoxes).map(cb => cb.dataset.key);
-    if (!confirm(`Bạn có chắc muốn chuyển ${keys.length} đơn vào thùng rác?`)) return;
-    const updatePromises = keys.map(key => ordersRef.child(key).update({ deletedAt: new Date().toISOString() }));
-    Promise.all(updatePromises).then(() => { alert(`✅ Đã chuyển ${keys.length} đơn vào thùng rác.`); $('selectAll').checked = false; }).catch(err => alert('❌ Lỗi: ' + err.message));
+    const checked = document.querySelectorAll('.order-checkbox:checked:not([disabled])');
+    if (!checked.length) { alert('Chọn ít nhất một đơn chưa xóa.'); return; }
+    const keys = Array.from(checked).map(cb => cb.dataset.key);
+    if (!confirm(`Chuyển ${keys.length} đơn vào thùng rác?`)) return;
+    Promise.all(keys.map(k => ordersRef.child(k).update({ deletedAt: new Date().toISOString() })))
+      .then(() => { alert('✅ Đã chuyển.'); $('selectAll').checked = false; })
+      .catch(err => alert('❌ Lỗi: ' + err.message));
   });
+
+  // ===== RECENT ORDERS (admin) =====
+  function renderRecent() {
+    const recent = orders.filter(o => o.status === 'paid' && !isDeleted(o))
+      .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5);
+    const container = $('recentList');
+    container.innerHTML = '';
+    if (!recent.length) {
+      container.innerHTML = '<div style="color:var(--muted);padding:8px 0;">Chưa có đơn hoàn thành.</div>';
+      return;
+    }
+    recent.forEach(o => {
+      const minutes = Math.floor((Date.now() - new Date(o.createdAt)) / 60000);
+      const timeText = minutes < 1 ? 'vài giây trước' : `${minutes} phút trước`;
+      const div = document.createElement('div');
+      div.className = 'recent-item';
+      const fakeBadge = o.isFake ? `<span class="fake-badge">(demo)</span>` : '';
+      div.innerHTML = `
+        <span class="action">Người dùng ẩn danh đã mua <strong>${escapeHtml(o.packageName)}</strong> ${fakeBadge}</span>
+        <span class="time">${timeText}</span>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  // ===== STOCK MANAGEMENT =====
+  function updateStock(itemType, itemKey, delta) {
+    const ref = itemType === 'package' ? packagesRef : productsRef;
+    ref.child(itemKey).transaction(current => {
+      if (current === null) return;
+      const newStock = (current.stock || 0) + delta;
+      if (newStock < 0) return;
+      current.stock = newStock;
+      return current;
+    });
+  }
 
   // ===== DRAWER =====
   async function checkIfBanned(ip, fp) {
     try {
-      const snapshot = await database.ref('banned_users').once('value');
-      const bans = snapshot.val();
+      const snap = await db.ref('banned_users').once('value');
+      const bans = snap.val();
       if (!bans) return false;
-      for (const key in bans) {
-        const ban = bans[key];
-        if (ban.ip === ip || ban.fingerprint === fp) return { key: key, ...ban };
+      for (const k in bans) {
+        const b = bans[k];
+        if (b.ip === ip || b.fingerprint === fp) return { key: k, ...b };
       }
-    } catch (e) { console.error(e); }
+    } catch(e) {}
     return false;
   }
-
   function banUser(order) {
     const ip = order.ip || 'Unknown';
-    const fingerprint = order.deviceFingerprint || 'Unknown';
-    const banKey = 'BAN_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-    const banData = { ip: ip, fingerprint: fingerprint, orderId: order.id, customerName: order.fullName, reason: 'Admin ban thủ công', timestamp: new Date().toISOString() };
-    database.ref('banned_users/' + banKey).set(banData)
-      .then(() => { alert('✅ Đã BAN thành công!'); closeDetails(); })
-      .catch(err => alert('❌ Lỗi: ' + err.message));
+    const fp = order.deviceFingerprint || 'Unknown';
+    const key = 'BAN_' + Date.now() + '_' + Math.random().toString(36).substring(2,9);
+    const data = { ip, fingerprint: fp, orderId: order.id, customerName: order.fullName, reason: 'Admin ban', timestamp: new Date().toISOString() };
+    db.ref('banned_users/' + key).set(data).then(() => { alert('✅ Đã BAN!'); closeDetails(); }).catch(err => alert('❌ Lỗi: ' + err.message));
   }
-
   function unbanUser(banInfo) {
-    if (!confirm(`Gỡ ban cho IP: ${banInfo.ip}?`)) return;
-    database.ref('banned_users/' + banInfo.key).remove()
-      .then(() => { alert('✅ Đã gỡ ban thành công!'); closeDetails(); })
-      .catch(err => alert('❌ Lỗi: ' + err.message));
+    if (!confirm(`Gỡ ban IP: ${banInfo.ip}?`)) return;
+    db.ref('banned_users/' + banInfo.key).remove().then(() => { alert('✅ Gỡ ban thành công!'); closeDetails(); }).catch(err => alert('❌ Lỗi: ' + err.message));
   }
 
   async function openDetails(order) {
@@ -833,8 +730,8 @@
     const usdtAmt = calcUsdt(order.amount, order.usdtRate);
     $('detailUsdtAmount').textContent = usdtDisplay(usdtAmt);
     $('detailUsdtRate').textContent = order.usdtRate ? order.usdtRate.toLocaleString('vi-VN') + ' VND' : '-';
-    $('detailRateSource').textContent = order.rateSource === 'api' ? '🔄 Tự động (API)' : '✏️ Thủ công';
-    $('detailCreatedAt').textContent = formatDate(order.createdAt);
+    $('detailRateSource').textContent = order.rateSource === 'api' ? '🔄 Tự động' : '✏️ Thủ công';
+    $('detailCreatedAt').textContent = fmtDate(order.createdAt);
     $('detailMethod').textContent = methodLabel(order.method);
     const st = isDeleted(order) ? 'deleted' : (order.status || 'pending');
     $('detailStatus').textContent = statusLabel(st);
@@ -845,7 +742,7 @@
     if (order.telegram) {
       const link = $('detailTelegram');
       link.textContent = order.telegram;
-      link.href = 'https://t.me/' + order.telegram.replace(/^@/, '');
+      link.href = 'https://t.me/' + order.telegram.replace(/^@/,'');
     } else {
       $('detailTelegram').textContent = '-';
       $('detailTelegram').removeAttribute('href');
@@ -867,38 +764,63 @@
     drawerActions.innerHTML = '';
     const banInfo = await checkIfBanned(order.ip, order.deviceFingerprint);
 
+    const confirmOrder = () => {
+      if (!currentOrder) return;
+      const oldStatus = currentOrder.status;
+      ordersRef.child(currentOrder._key).update({ status: 'paid' })
+        .then(() => {
+          if (oldStatus !== 'paid') {
+            const item = [...packages, ...products].find(p => p.name === currentOrder.packageName);
+            if (item) {
+              const type = packages.find(p => p.name === currentOrder.packageName) ? 'package' : 'product';
+              updateStock(type, item._key, -1);
+            }
+          }
+        })
+        .catch(err => alert('Lỗi: ' + err.message));
+    };
+    const cancelOrder = () => {
+      if (!currentOrder) return;
+      const oldStatus = currentOrder.status;
+      ordersRef.child(currentOrder._key).update({ status: 'cancelled' })
+        .then(() => {
+          if (oldStatus === 'paid') {
+            const item = [...packages, ...products].find(p => p.name === currentOrder.packageName);
+            if (item) {
+              const type = packages.find(p => p.name === currentOrder.packageName) ? 'package' : 'product';
+              updateStock(type, item._key, 1);
+            }
+          }
+        })
+        .catch(err => alert('Lỗi: ' + err.message));
+    };
+
     if (!isDel) {
       const confirmBtn = document.createElement('button');
       confirmBtn.className = 'btn btn-success';
       confirmBtn.textContent = '✓ Xác nhận';
-      confirmBtn.addEventListener('click', function() {
-        if (!currentOrder) return;
-        ordersRef.child(currentOrder._key).update({ status: 'paid' }).catch(err => alert('Lỗi: ' + err.message));
-      });
+      confirmBtn.addEventListener('click', confirmOrder);
 
       const cancelBtn = document.createElement('button');
       cancelBtn.className = 'btn btn-danger';
       cancelBtn.textContent = '✕ Từ chối';
-      cancelBtn.addEventListener('click', function() {
-        if (!currentOrder) return;
-        ordersRef.child(currentOrder._key).update({ status: 'cancelled' }).catch(err => alert('Lỗi: ' + err.message));
-      });
+      cancelBtn.addEventListener('click', cancelOrder);
 
       const actionBtn = document.createElement('button');
       actionBtn.style.gridColumn = 'span 2';
       actionBtn.style.marginTop = '8px';
       if (banInfo) {
         actionBtn.className = 'btn btn-restore';
-        actionBtn.textContent = '♻️ GỠ BAN (UNBAN)';
-        actionBtn.addEventListener('click', function() { unbanUser(banInfo); });
+        actionBtn.textContent = '♻️ GỠ BAN';
+        actionBtn.addEventListener('click', () => unbanUser(banInfo));
       } else {
         actionBtn.className = 'btn btn-danger-outline';
         actionBtn.style.borderColor = '#ff4444';
         actionBtn.style.color = '#ff4444';
-        actionBtn.textContent = '🚫 BAN IP & THIẾT BỊ NÀY';
-        actionBtn.addEventListener('click', function() {
+        actionBtn.textContent = '🚫 BAN IP & THIẾT BỊ';
+        actionBtn.addEventListener('click', () => {
           if (!currentOrder) return;
-          if (confirm(`Bạn có chắc muốn BAN vĩnh viễn IP: ${currentOrder.ip} ?`)) banUser(currentOrder);
+          if (confirm(`Ban vĩnh viễn IP: ${currentOrder.ip} ?`)) banUser(currentOrder);
         });
       }
 
@@ -909,40 +831,60 @@
       deleteBtn.addEventListener('click', function() {
         if (!currentOrder) return;
         if (!confirm(`Chuyển đơn #${currentOrder.id} vào thùng rác?`)) return;
-        ordersRef.child(currentOrder._key).update({ deletedAt: new Date().toISOString() }).then(() => { closeDetails(); }).catch(err => alert('Lỗi: ' + err.message));
+        ordersRef.child(currentOrder._key).update({ deletedAt: new Date().toISOString() })
+          .then(() => { closeDetails(); })
+          .catch(err => alert('Lỗi: ' + err.message));
       });
 
       drawerActions.append(confirmBtn, cancelBtn, actionBtn, deleteBtn);
     } else {
       const restoreBtn = document.createElement('button');
       restoreBtn.className = 'btn btn-restore';
-      restoreBtn.style.gridColumn = 'span 2';
-      restoreBtn.textContent = '♻️ Khôi phục đơn';
+      restoreBtn.textContent = '♻️ Khôi phục';
       restoreBtn.addEventListener('click', function() {
         if (!currentOrder) return;
         if (!confirm(`Khôi phục đơn #${currentOrder.id}?`)) return;
-        ordersRef.child(currentOrder._key).update({ deletedAt: null }).then(() => { closeDetails(); }).catch(err => alert('Lỗi: ' + err.message));
+        ordersRef.child(currentOrder._key).update({ deletedAt: null })
+          .then(() => { closeDetails(); })
+          .catch(err => alert('Lỗi: ' + err.message));
       });
-      drawerActions.append(restoreBtn);
+
+      const foreverBtn = document.createElement('button');
+      foreverBtn.className = 'btn btn-forever-delete';
+      foreverBtn.textContent = '🗑️ Xóa vĩnh viễn';
+      foreverBtn.addEventListener('click', function() {
+        if (!currentOrder) return;
+        if (!confirm(`Xóa vĩnh viễn đơn #${currentOrder.id}? Không thể khôi phục.`)) return;
+        if (currentOrder.status === 'paid') {
+          const item = [...packages, ...products].find(p => p.name === currentOrder.packageName);
+          if (item) {
+            const type = packages.find(p => p.name === currentOrder.packageName) ? 'package' : 'product';
+            updateStock(type, item._key, 1);
+          }
+        }
+        ordersRef.child(currentOrder._key).remove()
+          .then(() => { closeDetails(); })
+          .catch(err => alert('Lỗi: ' + err.message));
+      });
+
+      drawerActions.append(restoreBtn, foreverBtn);
     }
     detailOverlay.classList.remove('hidden');
     detailDrawer.classList.remove('hidden');
   }
-
   function closeDetails() {
     detailOverlay.classList.add('hidden');
     detailDrawer.classList.add('hidden');
     currentOrder = null;
   }
-
   $('closeDrawer').addEventListener('click', closeDetails);
   detailOverlay.addEventListener('click', closeDetails);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetails(); });
 
   // ===== CONFIG =====
   function loadConfigToForm() {
-    configRef.once('value', snapshot => {
-      const data = snapshot.val();
+    configRef.once('value', snap => {
+      const data = snap.val();
       if (data) {
         $('cfgBankCode').value = data.bankCode || 'MB';
         $('cfgAccountNumber').value = data.accountNumber || 'VQRQAKKMJ5126';
@@ -952,10 +894,10 @@
         $('cfgAutoRate').checked = data.autoRate !== false;
         $('cfgTelegramToken').value = data.telegramToken || '';
         $('cfgTelegramChatId').value = data.telegramChatId || '';
+        $('cfgFakeInterval').value = data.fakeOrderInterval || 30;
       }
     });
   }
-
   $('saveConfigBtn').addEventListener('click', function() {
     const newConfig = {
       bankCode: $('cfgBankCode').value.trim(),
@@ -966,37 +908,33 @@
       autoRate: $('cfgAutoRate').checked,
       memoPrefix: 'MUAHANG',
       telegramToken: $('cfgTelegramToken').value.trim(),
-      telegramChatId: $('cfgTelegramChatId').value.trim()
+      telegramChatId: $('cfgTelegramChatId').value.trim(),
+      fakeOrderInterval: parseInt($('cfgFakeInterval').value) || 30
     };
-    configRef.set(newConfig).then(() => alert('✅ Đã lưu cài đặt!')).catch(err => alert('❌ Lỗi: ' + err.message));
+    configRef.set(newConfig).then(() => alert('✅ Lưu thành công!')).catch(err => alert('❌ Lỗi: ' + err.message));
   });
 
   // ===== PACKAGES =====
   function listenPackages() {
-    packagesRef.on('value', snapshot => {
-      const data = snapshot.val();
-      packages = data ? Object.keys(data).map(key => ({ _key: key, ...data[key] })) : [];
+    packagesRef.on('value', snap => {
+      const data = snap.val();
+      packages = data ? Object.keys(data).map(k => ({ _key: k, ...data[k] })) : [];
       renderPackages();
-      updatePackageFilter();
     });
   }
-
   function renderPackages() {
     packageTableBody.innerHTML = '';
-    if (!packages.length) {
-      emptyPackages.classList.remove('hidden');
-      return;
-    }
+    if (!packages.length) { emptyPackages.classList.remove('hidden'); return; }
     emptyPackages.classList.add('hidden');
-    packages.forEach((p, index) => {
+    packages.forEach((p, i) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" class="thumb" alt="${escapeHtml(p.name)}" />` : '-'}</td>
+        <td>${i+1}</td>
+        <td>${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" class="thumb" />` : '-'}</td>
         <td><strong>${escapeHtml(p.name)}</strong></td>
         <td>${money(p.price)}</td>
         <td>${p.oldPrice ? money(p.oldPrice) : '-'}</td>
-        <td>${p.stock !== undefined && p.stock !== null ? p.stock : '-'}</td>
+        <td>${p.stock !== undefined ? p.stock : '-'}</td>
         <td class="actions">
           <button class="edit-pkg" data-key="${escapeHtml(p._key)}">✏️</button>
           <button class="delete-pkg" data-key="${escapeHtml(p._key)}">🗑️</button>
@@ -1004,13 +942,11 @@
       `;
       packageTableBody.appendChild(tr);
     });
-
     packageTableBody.querySelectorAll('.edit-pkg').forEach(btn => {
       btn.addEventListener('click', function() {
-        const key = this.dataset.key;
-        const pkg = packages.find(p => p._key === key);
+        const pkg = packages.find(p => p._key === this.dataset.key);
         if (!pkg) return;
-        editingPackageKey = key;
+        editingPackageKey = pkg._key;
         $('pkgName').value = pkg.name || '';
         $('pkgPrice').value = pkg.price || '';
         $('pkgOldPrice').value = pkg.oldPrice || '';
@@ -1022,48 +958,27 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
-
     packageTableBody.querySelectorAll('.delete-pkg').forEach(btn => {
       btn.addEventListener('click', function() {
-        const key = this.dataset.key;
         if (!confirm('Xóa gói này?')) return;
-        packagesRef.child(key).remove().then(() => {
-          alert('✅ Đã xóa gói.');
-        }).catch(err => alert('❌ Lỗi: ' + err.message));
+        packagesRef.child(this.dataset.key).remove().then(() => alert('✅ Đã xóa.')).catch(err => alert('❌ Lỗi: '+err.message));
       });
     });
   }
-
   function setupPackageForm() {
     $('cancelEditPkgBtn').addEventListener('click', resetPackageForm);
-
     $('addPackageBtn').addEventListener('click', function() {
       const name = $('pkgName').value.trim();
       const price = parseFloat($('pkgPrice').value);
-      const oldPrice = parseFloat($('pkgOldPrice').value) || null;
-      const stock = parseInt($('pkgStock').value) || 0;
-      const description = $('pkgDesc').value.trim();
-      const imageUrl = $('pkgImage').value.trim();
-
-      if (!name || !price) {
-        alert('Vui lòng nhập tên và giá.');
-        return;
-      }
-
-      const data = { name, price, oldPrice, stock, description, imageUrl, updatedAt: new Date().toISOString() };
-
+      if (!name || !price) { alert('Vui lòng nhập tên và giá.'); return; }
+      const data = { name, price, oldPrice: parseFloat($('pkgOldPrice').value)||null, stock: parseInt($('pkgStock').value)||0, description: $('pkgDesc').value.trim(), imageUrl: $('pkgImage').value.trim(), updatedAt: new Date().toISOString() };
       if (editingPackageKey) {
-        packagesRef.child(editingPackageKey).update(data)
-          .then(() => { alert('✅ Đã cập nhật gói!'); resetPackageForm(); })
-          .catch(err => alert('❌ Lỗi: ' + err.message));
+        packagesRef.child(editingPackageKey).update(data).then(() => { alert('✅ Cập nhật thành công!'); resetPackageForm(); }).catch(err => alert('❌ Lỗi: '+err.message));
       } else {
-        packagesRef.push({ ...data, createdAt: new Date().toISOString() })
-          .then(() => { alert('✅ Đã thêm gói!'); resetPackageForm(); })
-          .catch(err => alert('❌ Lỗi: ' + err.message));
+        packagesRef.push({ ...data, createdAt: new Date().toISOString() }).then(() => { alert('✅ Thêm gói thành công!'); resetPackageForm(); }).catch(err => alert('❌ Lỗi: '+err.message));
       }
     });
   }
-
   function resetPackageForm() {
     $('pkgName').value = '';
     $('pkgPrice').value = '';
@@ -1078,32 +993,27 @@
 
   // ===== PRODUCTS =====
   function listenProducts() {
-    productsRef.on('value', snapshot => {
-      const data = snapshot.val();
-      products = data ? Object.keys(data).map(key => ({ _key: key, ...data[key] })) : [];
+    productsRef.on('value', snap => {
+      const data = snap.val();
+      products = data ? Object.keys(data).map(k => ({ _key: k, ...data[k] })) : [];
       renderProducts();
     });
   }
-
   function renderProducts() {
     productTableBody.innerHTML = '';
-    if (!products.length) {
-      emptyProducts.classList.remove('hidden');
-      return;
-    }
+    if (!products.length) { emptyProducts.classList.remove('hidden'); return; }
     emptyProducts.classList.add('hidden');
-    products.sort((a, b) => (a.priority || 999) - (b.priority || 999));
-
-    products.forEach((p, index) => {
+    products.sort((a,b) => (a.priority||999) - (b.priority||999));
+    products.forEach((p, i) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" class="thumb" alt="${escapeHtml(p.name)}" />` : '-'}</td>
+        <td>${i+1}</td>
+        <td>${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" class="thumb" />` : '-'}</td>
         <td><strong>${escapeHtml(p.name)}</strong></td>
         <td>${money(p.price)}</td>
         <td>${p.oldPrice ? money(p.oldPrice) : '-'}</td>
         <td>${p.priority || '-'}</td>
-        <td>${p.stock !== undefined && p.stock !== null ? p.stock : '-'}</td>
+        <td>${p.stock !== undefined ? p.stock : '-'}</td>
         <td class="actions">
           <button class="edit-prod" data-key="${escapeHtml(p._key)}">✏️</button>
           <button class="delete-prod" data-key="${escapeHtml(p._key)}">🗑️</button>
@@ -1111,13 +1021,11 @@
       `;
       productTableBody.appendChild(tr);
     });
-
     productTableBody.querySelectorAll('.edit-prod').forEach(btn => {
       btn.addEventListener('click', function() {
-        const key = this.dataset.key;
-        const prod = products.find(p => p._key === key);
+        const prod = products.find(p => p._key === this.dataset.key);
         if (!prod) return;
-        editingProductKey = key;
+        editingProductKey = prod._key;
         $('prodName').value = prod.name || '';
         $('prodPrice').value = prod.price || '';
         $('prodOldPrice').value = prod.oldPrice || '';
@@ -1130,49 +1038,27 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
-
     productTableBody.querySelectorAll('.delete-prod').forEach(btn => {
       btn.addEventListener('click', function() {
-        const key = this.dataset.key;
         if (!confirm('Xóa sản phẩm này?')) return;
-        productsRef.child(key).remove().then(() => {
-          alert('✅ Đã xóa sản phẩm.');
-        }).catch(err => alert('❌ Lỗi: ' + err.message));
+        productsRef.child(this.dataset.key).remove().then(() => alert('✅ Đã xóa.')).catch(err => alert('❌ Lỗi: '+err.message));
       });
     });
   }
-
   function setupProductForm() {
     $('cancelEditProdBtn').addEventListener('click', resetProductForm);
-
     $('addProductBtn').addEventListener('click', function() {
       const name = $('prodName').value.trim();
       const price = parseFloat($('prodPrice').value);
-      const oldPrice = parseFloat($('prodOldPrice').value) || null;
-      const priority = parseInt($('prodPriority').value) || 10;
-      const stock = parseInt($('prodStock').value) || 0;
-      const description = $('prodDesc').value.trim();
-      const imageUrl = $('prodImage').value.trim();
-
-      if (!name || !price) {
-        alert('Vui lòng nhập đầy đủ tên và giá.');
-        return;
-      }
-
-      const data = { name, price, oldPrice, priority, stock, description, imageUrl, updatedAt: new Date().toISOString() };
-
+      if (!name || !price) { alert('Vui lòng nhập tên và giá.'); return; }
+      const data = { name, price, oldPrice: parseFloat($('prodOldPrice').value)||null, priority: parseInt($('prodPriority').value)||10, stock: parseInt($('prodStock').value)||0, description: $('prodDesc').value.trim(), imageUrl: $('prodImage').value.trim(), updatedAt: new Date().toISOString() };
       if (editingProductKey) {
-        productsRef.child(editingProductKey).update(data)
-          .then(() => { alert('✅ Đã cập nhật sản phẩm!'); resetProductForm(); })
-          .catch(err => alert('❌ Lỗi: ' + err.message));
+        productsRef.child(editingProductKey).update(data).then(() => { alert('✅ Cập nhật thành công!'); resetProductForm(); }).catch(err => alert('❌ Lỗi: '+err.message));
       } else {
-        productsRef.push({ ...data, createdAt: new Date().toISOString() })
-          .then(() => { alert('✅ Đã thêm sản phẩm!'); resetProductForm(); })
-          .catch(err => alert('❌ Lỗi: ' + err.message));
+        productsRef.push({ ...data, createdAt: new Date().toISOString() }).then(() => { alert('✅ Thêm sản phẩm thành công!'); resetProductForm(); }).catch(err => alert('❌ Lỗi: '+err.message));
       }
     });
   }
-
   function resetProductForm() {
     $('prodName').value = '';
     $('prodPrice').value = '';
@@ -1188,17 +1074,17 @@
 
   // ===== FILTERS =====
   function setupFilters() {
-    const searchInput = $('searchInput');
-    const methodFilter = $('methodFilter');
-    const statusFilter = $('statusFilter');
-    const packageFilter = $('packageFilter');
-    const clearBtn = $('clearFilters');
-    [searchInput, methodFilter, statusFilter, packageFilter].forEach(el => {
+    ['searchInput','methodFilter','statusFilter','packageFilter'].forEach(id => {
+      const el = $(id);
       el.addEventListener('input', renderOrders);
       el.addEventListener('change', renderOrders);
     });
-    clearBtn.addEventListener('click', function() {
-      searchInput.value = ''; methodFilter.value = 'all'; statusFilter.value = 'all'; packageFilter.value = 'all'; renderOrders();
+    $('clearFilters').addEventListener('click', function() {
+      $('searchInput').value = '';
+      $('methodFilter').value = 'all';
+      $('statusFilter').value = 'all';
+      $('packageFilter').value = 'all';
+      renderOrders();
     });
   }
 
