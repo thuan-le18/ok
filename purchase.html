@@ -8,7 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    /* --- GIỮ NGUYÊN TOÀN BỘ CSS CŨ (KHÔNG THAY ĐỔI) --- */
+    /* ===== RESET & VARIABLES ===== */
     :root {
       --bg: #060608;
       --panel: #111115;
@@ -40,7 +40,110 @@
     .notice-box h4 { margin: 0 0 10px; color: #f87171; font-size: 16px; }
     .notice-box ul { margin: 0; padding-left: 20px; color: #d1d5db; font-size: 14px; line-height: 1.7; }
 
-    /* ===== GÓI GIAO DỊCH & SẢN PHẨM ===== */
+    /* ===== PACKAGES GRID (KIỂU CŨ) ===== */
+    .packages-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+    .package-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.25s ease;
+      box-shadow: var(--shadow);
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+    }
+    .package-card:hover { border-color: rgba(212,175,55,0.4); transform: translateY(-2px); }
+    .package-card.selected { border-color: var(--gold); background: var(--panel-2); }
+    .package-card h3 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .package-card .label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 14px;
+      display: block;
+    }
+    .package-card .price {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--gold);
+      margin: 4px 0 12px;
+    }
+    .package-card .old-price {
+      font-size: 18px;
+      color: var(--muted);
+      text-decoration: line-through;
+      margin-right: 8px;
+    }
+    .package-card .stock {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .package-card .stock strong { color: #fff; }
+    .package-card .desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 60px;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .package-card .desc.expanded {
+      max-height: 500px;
+    }
+    .package-card .desc-toggle {
+      background: transparent;
+      border: none;
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 2px 0;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+    .package-card .desc-toggle:hover { opacity: 0.8; }
+    .package-card .btn-view-images {
+      background: rgba(212,175,55,0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+      margin: 8px auto 10px;
+    }
+    .package-card .btn-view-images:hover {
+      background: rgba(212,175,55,0.25);
+      transform: scale(1.02);
+    }
+    .package-card .btn {
+      margin-top: auto;
+    }
+
+    .package-card .pkg-image {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      background: #0a0a0f;
+      cursor: pointer;
+    }
+
+    /* ===== SẢN PHẨM (GIỮ NGUYÊN) ===== */
     .items-section { margin-bottom: 40px; }
     .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
 
@@ -53,8 +156,6 @@
       box-shadow: var(--shadow);
     }
     .item-card:hover { transform: translateY(-3px); border-color: rgba(212,175,55,0.3); }
-
-    /* Sản phẩm có ảnh hiển thị sẵn */
     .item-card .img-wrap {
       width: 100%;
       height: 300px;
@@ -69,7 +170,6 @@
       transition: transform 0.4s ease;
     }
     .item-card .img-wrap:hover img { transform: scale(1.04); }
-
     .item-card .body { padding: 16px 18px 20px; }
     .item-card .body h3 {
       font-size: 18px;
@@ -80,10 +180,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .item-card .body .desc-wrap {
-      position: relative;
-      margin-bottom: 12px;
-    }
+    .item-card .body .desc-wrap { position: relative; margin-bottom: 12px; }
     .item-card .body .desc {
       font-size: 13px;
       color: var(--muted);
@@ -94,9 +191,7 @@
       white-space: pre-wrap;
       word-wrap: break-word;
     }
-    .item-card .body .desc.expanded {
-      max-height: 500px;
-    }
+    .item-card .body .desc.expanded { max-height: 500px; }
     .item-card .body .desc-toggle {
       background: transparent;
       border: none;
@@ -109,26 +204,6 @@
       display: inline-block;
     }
     .item-card .body .desc-toggle:hover { opacity: 0.8; }
-
-    /* Nút xem ảnh mô tả (dành cho gói) – sẽ ở đầu card */
-    .item-card .body .btn-view-images {
-      background: rgba(212,175,55,0.15);
-      border: 1px solid var(--gold);
-      color: var(--gold-light);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-block;
-      margin-bottom: 10px;
-    }
-    .item-card .body .btn-view-images:hover {
-      background: rgba(212,175,55,0.25);
-      transform: scale(1.02);
-    }
-
     .item-card .body .price-row {
       display: flex;
       align-items: center;
@@ -152,7 +227,6 @@
       margin-bottom: 8px;
     }
     .item-card .body .stock strong { color: #fff; }
-
     .item-card .body .btn-small {
       padding: 8px 20px;
       font-size: 13px;
@@ -293,6 +367,7 @@
     @keyframes flash-danger { 0% { opacity: 1; } 100% { opacity: 0.2; } }
     @keyframes flash-system { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     @media (max-width: 768px) {
+      .packages-grid { grid-template-columns: 1fr; gap: 16px; }
       .items-grid { grid-template-columns: 1fr; }
       .info-row-grid { grid-template-columns: 1fr; gap: 12px; }
       .panel { padding: 24px 16px; }
@@ -318,8 +393,8 @@
 </header>
 
 <main class="wrap container">
-  <!-- GÓI GIAO DỊCH (ưu tiên hiển thị trước) -->
-  <div id="section-packages-wrapper" class="items-section">
+  <!-- GÓI GIAO DỊCH (KIỂU CŨ) -->
+  <div id="section-packages-wrapper">
     <h1 class="page-title">GÓI GIAO DỊCH <span class="gold">ƯU ĐÃI</span></h1>
     <p class="page-subtitle">Hệ thống thanh toán tự động 24/7 - Bảo mật.</p>
     <div class="notice-box">
@@ -330,7 +405,7 @@
         <li>Kiểm tra đúng đó là thông tin của bạn khi hệ thống duyệt không thể thu hồi.</li>
       </ul>
     </div>
-    <div id="packagesContainer" class="items-grid">
+    <div id="packagesContainer" class="packages-grid">
       <!-- Render bằng JS -->
     </div>
   </div>
@@ -624,7 +699,7 @@
   let selectedItemName = '';
   let selectedProductKey = null;
   let selectedBankCode = '';
-  let selectedPaymentMethod = 'usdt'; // cho gói
+  let selectedPaymentMethod = 'usdt';
   let currentConfig = {};
   let packages = [];
   let products = [];
@@ -657,7 +732,7 @@
   }
   loadProducts();
 
-  // ===== RENDER GÓI (đã sắp xếp lại thứ tự: nút xem ảnh lên đầu) =====
+  // ===== RENDER GÓI (KIỂU CŨ) =====
   function renderPackages() {
     const container = document.getElementById('packagesContainer');
     container.innerHTML = '';
@@ -667,43 +742,25 @@
     }
     packages.forEach(pkg => {
       const card = document.createElement('div');
-      card.className = 'item-card';
+      card.className = 'package-card';
 
-      const body = document.createElement('div');
-      body.className = 'body';
-
-      // 1. Nút "Hình ảnh mô tả" (nếu có ảnh) – đặt ở đầu
-      if (pkg.imageUrl) {
-        const viewBtn = document.createElement('button');
-        viewBtn.className = 'btn-view-images';
-        viewBtn.innerHTML = '<i class="fas fa-image"></i> Hình ảnh mô tả';
-        viewBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          openLightbox(pkg.imageUrl);
-        });
-        body.appendChild(viewBtn);
-      }
-
-      // 2. Tên gói
+      // Tên gói
       const nameEl = document.createElement('h3');
       nameEl.textContent = pkg.name || '';
-      body.appendChild(nameEl);
+      card.appendChild(nameEl);
 
-      // 3. Mô tả (có nút xem thêm nếu dài)
-      const descWrap = document.createElement('div');
-      descWrap.className = 'desc-wrap';
+      // Mô tả + nút xem thêm
       const desc = pkg.description || '';
-      const descId = 'desc_' + pkg._key;
       const needToggle = desc.length > 80;
       const descDiv = document.createElement('div');
       descDiv.className = 'desc';
-      descDiv.id = descId;
+      descDiv.id = 'desc_' + pkg._key;
       descDiv.textContent = desc;
-      descWrap.appendChild(descDiv);
+      card.appendChild(descDiv);
       if (needToggle) {
         const toggleBtn = document.createElement('button');
         toggleBtn.className = 'desc-toggle';
-        toggleBtn.dataset.target = descId;
+        toggleBtn.dataset.target = 'desc_' + pkg._key;
         toggleBtn.textContent = 'Xem thêm';
         toggleBtn.addEventListener('click', function() {
           const target = document.getElementById(this.dataset.target);
@@ -712,43 +769,56 @@
             this.textContent = target.classList.contains('expanded') ? 'Thu gọn' : 'Xem thêm';
           }
         });
-        descWrap.appendChild(toggleBtn);
+        card.appendChild(toggleBtn);
       }
-      body.appendChild(descWrap);
 
-      // 4. Giá
+      // Giá
       const priceRow = document.createElement('div');
-      priceRow.className = 'price-row';
       if (pkg.oldPrice) {
-        const oldPriceSpan = document.createElement('span');
-        oldPriceSpan.className = 'old-price';
-        oldPriceSpan.textContent = money(pkg.oldPrice);
-        priceRow.appendChild(oldPriceSpan);
+        const oldSpan = document.createElement('span');
+        oldSpan.className = 'old-price';
+        oldSpan.textContent = money(pkg.oldPrice);
+        priceRow.appendChild(oldSpan);
       }
       const priceSpan = document.createElement('span');
       priceSpan.className = 'price';
       priceSpan.textContent = money(pkg.price);
       priceRow.appendChild(priceSpan);
-      body.appendChild(priceRow);
+      card.appendChild(priceRow);
 
-      // 5. Tồn kho
+      // Tồn kho
       if (pkg.stock !== undefined && pkg.stock !== null) {
         const stockDiv = document.createElement('div');
         stockDiv.className = 'stock';
         stockDiv.innerHTML = `Hiện có: <strong>${pkg.stock}</strong>`;
-        body.appendChild(stockDiv);
+        card.appendChild(stockDiv);
       }
 
-      // 6. Nút chọn gói (cuối cùng)
+      // Label "GIÁ MUA" (kiểu cũ)
+      const label = document.createElement('span');
+      label.className = 'label';
+      label.textContent = 'GIÁ MUA';
+      card.appendChild(label);
+
+      // Nút "Hình ảnh mô tả" (nếu có ảnh) - đặt trước nút chọn gói
+      if (pkg.imageUrl) {
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'btn-view-images';
+        viewBtn.innerHTML = '<i class="fas fa-image"></i> Hình ảnh mô tả';
+        viewBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openLightbox(pkg.imageUrl);
+        });
+        card.appendChild(viewBtn);
+      }
+
+      // Nút chọn gói
       const buyBtn = document.createElement('button');
-      buyBtn.className = 'btn-small buy-package';
-      buyBtn.dataset.key = pkg._key;
+      buyBtn.className = 'btn btn-gold';
       buyBtn.textContent = 'CHỌN GÓI';
       buyBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        const key = this.dataset.key;
-        const pkg = packages.find(p => p._key === key);
-        if (!pkg) return;
+        const key = pkg._key;
         selectedItemName = pkg.name;
         selectedItemPrice = pkg.price;
         document.getElementById('section-packages-wrapper').style.display = 'none';
@@ -756,14 +826,13 @@
         document.getElementById('order-form-panel').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
-      body.appendChild(buyBtn);
+      card.appendChild(buyBtn);
 
-      card.appendChild(body);
       container.appendChild(card);
     });
   }
 
-  // ===== RENDER SẢN PHẨM (giữ nguyên, có ảnh hiển thị sẵn) =====
+  // ===== RENDER SẢN PHẨM (giữ nguyên) =====
   function renderProducts() {
     const container = document.getElementById('productsContainer');
     const section = document.getElementById('section-products-wrapper');
@@ -779,7 +848,6 @@
       const card = document.createElement('div');
       card.className = 'item-card';
 
-      // Ảnh (hiển thị sẵn)
       const imgWrap = document.createElement('div');
       imgWrap.className = 'img-wrap';
       if (product.imageUrl) {
@@ -805,12 +873,10 @@
       const body = document.createElement('div');
       body.className = 'body';
 
-      // Tên
       const nameEl = document.createElement('h3');
       nameEl.textContent = product.name || '';
       body.appendChild(nameEl);
 
-      // Mô tả + xem thêm
       const descWrap = document.createElement('div');
       descWrap.className = 'desc-wrap';
       const desc = product.description || '';
@@ -837,7 +903,6 @@
       }
       body.appendChild(descWrap);
 
-      // Giá
       const priceRow = document.createElement('div');
       priceRow.className = 'price-row';
       if (product.oldPrice) {
@@ -852,7 +917,6 @@
       priceRow.appendChild(priceSpan);
       body.appendChild(priceRow);
 
-      // Tồn kho
       if (product.stock !== undefined && product.stock !== null) {
         const stockDiv = document.createElement('div');
         stockDiv.className = 'stock';
@@ -860,7 +924,6 @@
         body.appendChild(stockDiv);
       }
 
-      // Nút mua
       const buyBtn = document.createElement('button');
       buyBtn.className = 'btn-small buy-product';
       buyBtn.dataset.key = product._key;
@@ -952,8 +1015,7 @@
       if (realRate && realRate > 0) { usdtRate = realRate; rateSource = 'api'; }
     }
 
-    // ✅ Mã đơn = nội dung chuyển khoản (có dấu cách)
-    const orderId = "MUAHANG " + Date.now().toString(36).toUpperCase();
+    const orderId = "MUAHANG" + Date.now().toString(36).toUpperCase();
     const memo = orderId;
 
     const orderData = {
@@ -1249,8 +1311,7 @@
       if (realRate && realRate > 0) { usdtRate = realRate; rateSource = 'api'; }
     }
 
-    // ✅ Mã đơn = nội dung chuyển khoản (có dấu cách)
-    const orderId = "MUAHANG " + Date.now().toString(36).toUpperCase();
+    const orderId = "MUAHANG" + Date.now().toString(36).toUpperCase();
     const memo = orderId;
 
     const orderData = {
