@@ -4,11 +4,8 @@
   <meta charset="UTF-8" />
   
   <!-- === KỸ THUẬT CHẶN RENDER (ANTI-FLASH) === -->
-  <!-- Ẩn toàn bộ trang web ngay lập tức, ngăn không cho hiển thị UI khi mạng lag -->
   <style id="tb-anti-flash">html { display: none !important; }</style>
   <script>
-    // Kiểm tra cực nhanh từ bộ nhớ máy (nếu thiết bị này đã từng bị ban trước đó)
-    // Bước này chạy trong 1ms, không cần đợi mạng, đảm bảo không bao giờ lộ UI
     if (localStorage.getItem('tb_banned_device') === '1') {
       document.open();
       document.write('<style>html,body{background:#000000!important;margin:0;padding:0;height:100vh;width:100vw;overflow:hidden;cursor:none!important;} *{display:none!important;}</style>');
@@ -19,7 +16,24 @@
   <!-- ========================================== -->
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TIENBAN | Trang Chủ</title>
+  
+  <!-- ===== META GOOGLE SEARCH CONSOLE (XÁC MINH) ===== -->
+  <meta name="google-site-verification" content="fw5OnuE4fVJkOz53c-iOEdk60KukRhBIy36EZqWkJEM" />
+  
+  <!-- ===== SEO CƠ BẢN ===== -->
+  <title>BLACKMARKET</title>
+  <meta name="description" content="TIENBAN - Nền tảng mua hàng Blackmarket" />
+  <meta name="keywords" content="billvn, blackmmo, tienban, TIENBAN, tiền bẩn, rửa tiền, bank online, muatienban, mua tiền bẩn" />
+  <link rel="canonical" href="https://tienbanccv.vercel.app/" />
+  
+  <!-- ===== OPEN GRAPH (CHIA SẺ MẠNG XÃ HỘI) ===== -->
+  <meta property="og:title" content="TIENBAN - Dịch Vụ" />
+  <meta property="og:description" content="TIENBAN cung cấp giải pháp thanh toán, hợp thức hóa dòng tiền chuyên nghiệp, bảo mật và nhanh chóng." />
+  <meta property="og:image" content="https://tienbanccv.vercel.app/og-image.jpg" />
+  <meta property="og:url" content="https://tienbanccv.vercel.app/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   
   <!-- Firebase SDK -->
@@ -27,6 +41,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   
   <style>
+    /* ===== GIỮ NGUYÊN TOÀN BỘ CSS (TRỪ PHẦN CHAT) ===== */
     :root {
       --bg: #060608;
       --panel: #111115;
@@ -63,7 +78,6 @@
     a { color: inherit; text-decoration: none; }
     .wrap { width: min(1200px, calc(100% - 40px)); margin: 0 auto; }
 
-    /* Header Navigation */
     .nav {
       position: sticky; top: 0; z-index: 100;
       backdrop-filter: blur(16px);
@@ -126,7 +140,6 @@
       transform: translateY(-1px); 
     }
 
-    /* Hero Section */
     .hero {
       display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px;
       align-items: center; min-height: calc(100vh - 80px); padding: 40px 0;
@@ -181,7 +194,6 @@
     .stat-title { font-size: 28px; font-weight: 900; margin: 0; color: var(--gold-light); }
     .stat-desc { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
-    /* Stats Grid */
     .stats { 
       display: grid; grid-template-columns: repeat(3, 1fr); 
       gap: 24px; padding: 40px 0 60px; 
@@ -303,6 +315,102 @@
     }
     .delay-1 { transition-delay: 100ms; }
     .delay-2 { transition-delay: 200ms; }
+
+    /* ===== FAQ (CÂU HỎI THƯỜNG GẶP) ===== */
+    .faq-list {
+      max-width: 820px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+    .faq-item {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .faq-item:hover {
+      border-color: rgba(212, 175, 55, 0.2);
+      background: var(--panel-hover);
+    }
+    .faq-item.open {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: var(--panel-hover);
+    }
+    .faq-question {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+      padding: 20px 24px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-family: inherit;
+      transition: color 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+    .faq-question:hover { color: var(--gold-light); }
+    .faq-question span {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .faq-question .faq-bullet {
+      color: var(--gold);
+      font-size: 14px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+    .faq-item.open .faq-bullet { transform: rotate(90deg); }
+    .faq-question .faq-icon {
+      color: var(--gold);
+      font-size: 13px;
+      transition: transform 0.35s ease;
+      flex-shrink: 0;
+    }
+    .faq-item.open .faq-icon { transform: rotate(180deg); }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                  padding 0.4s ease,
+                  opacity 0.35s ease;
+      padding: 0 24px;
+      opacity: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 600px;
+      padding: 0 24px 22px 24px;
+      opacity: 1;
+    }
+    .faq-answer p { margin: 0 0 10px; }
+    .faq-answer p:last-child { margin-bottom: 0; }
+    .faq-answer strong { color: var(--gold-light); font-weight: 700; }
+    .faq-answer .path {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+      .faq-question { font-size: 15px; padding: 18px 18px; }
+      .faq-item.open .faq-answer { padding: 0 18px 18px 18px; }
+    }
+
   </style>
 </head>
 <body>
@@ -311,9 +419,9 @@
     <div class="wrap nav-inner">
       <a class="brand" href="#">TIENBAN</a>
       <nav class="nav-links">
-        <a href="#home">TRANG CHỦ</a>
+        <a href="/">TRANG CHỦ</a>
       </nav>
-      <a class="btn btn-gold" href="purchase.html">MUA NGAY</a>
+      <a class="btn btn-gold" href="/purchase">MUA NGAY</a>
     </div>
   </header>
 
@@ -327,7 +435,7 @@
         </p>
         <p class="sub-italic">Đồng hành cùng khách hàng trên con đường phát triển bền vững.</p>
         <div class="actions">
-          <a class="btn btn-gold" href="purchase.html">Bắt Đầu Giao Dịch</a>
+          <a class="btn btn-gold" href="/purchase">Bắt Đầu Giao Dịch</a>
           <a class="btn btn-outline" href="#process">Tìm Hiểu Thêm</a>
         </div>
       </div>
@@ -404,6 +512,75 @@
         </div>
       </div>
     </section>
+
+    <!-- ===== FAQ - CÂU HỎI THƯỜNG GẶP ===== -->
+    <section id="faq" class="section">
+      <h2 class="section-title reveal">Câu Hỏi <span class="gold">Thường Gặp</span></h2>
+      <div class="faq-list">
+
+        <div class="faq-item reveal">
+          <button class="faq-question" type="button">
+            <span><i class="fas fa-caret-right faq-bullet"></i> Làm sao để mua hàng?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Vào menu <strong>MUA NGAY</strong> → chọn gói phù hợp với nhu cầu của bạn. Khi chọn xong, hệ thống sẽ hiển thị <strong>thông tin nhận tiền</strong>. Bạn chỉ cần <strong>điền thông tin</strong> và <strong>xác nhận</strong> là hoàn tất.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" type="button">
+            <span><i class="fas fa-caret-right faq-bullet"></i> Nạp và rút mất bao lâu?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Lệnh nạp ghi nhận gần như tức thì sau khi ngân hàng báo có. Lệnh rút đi qua một bước đối soát ngắn rồi chuyển thẳng về tài khoản đã đăng ký.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" type="button">
+            <span><i class="fas fa-caret-right faq-bullet"></i> Giao dịch có bảo mật không?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Toàn bộ giao dịch được mã hóa end-to-end qua kết nối <strong>HTTPS</strong> và hệ thống bảo mật đa lớp. Thông tin tài khoản của bạn <strong>không được lưu trữ</strong> dưới bất kỳ hình thức nào sau khi giao dịch hoàn tất.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" type="button">
+            <span><i class="fas fa-caret-right faq-bullet"></i> Hỗ trợ những ngân hàng và ví nào?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>TIENBAN hỗ trợ <strong>hơn 30 ngân hàng</strong> nội địa (Vietcombank, Techcombank, MB, ACB, VIB, VPBank...), ví điện tử <strong>MoMo, ZaloPay</strong> và thanh toán qua <strong>USDT (TRC20)</strong>.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" type="button">
+            <span><i class="fas fa-caret-right faq-bullet"></i> Điền sai thông tin nhận tiền thì sao?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Vui lòng kiểm tra <strong>kỹ thông tin trước khi xác nhận</strong>. Sau khi hệ thống duyệt, giao dịch <strong>không thể thu hồi hoặc sửa lại</strong>. Nếu phát hiện sai, liên hệ ngay <span class="path"><i class="fas fa-paper-plane"></i>Telegram hỗ trợ</span> để được xử lý kịp thời.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" type="button">
+            <span><i class="fas fa-caret-right faq-bullet"></i> Có giới hạn số tiền mỗi ngày không?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Mỗi ngân hàng có thể mua tối đa <strong>60 triệu đồng</strong> trong vòng 3 ngày. Với giao dịch lớn hơn, vui lòng liên hệ trực tiếp qua Telegram để được hỗ trợ riêng.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
   </main>
 
   <footer class="footer">
@@ -478,7 +655,7 @@
       }
     }
 
-    // ===== KHỞI TẠO HIỆU ỨNG REVEAL (CHỈ CHẠY SAU KHI TRANG ĐÃ HIỂN THỊ) =====
+    // ===== KHỞI TẠO HIỆU ỨNG REVEAL =====
     function initRevealAnimations() {
       const revealElements = document.querySelectorAll(".reveal");
       const observer = new IntersectionObserver((entries) => {
@@ -494,7 +671,6 @@
 
       revealElements.forEach((el) => observer.observe(el));
       
-      // Force check ngay lập tức sau khi hiển thị để bắt các phần tử đã nằm trong viewport
       setTimeout(() => {
         revealElements.forEach(el => {
           const rect = el.getBoundingClientRect();
@@ -502,12 +678,11 @@
             el.classList.add("active");
           }
         });
-      }, 50); // Đợi 50ms để trình duyệt kịp render layout
+      }, 50);
     }
 
-    // ===== KIỂM TRA BAN & CHẶN TRUY CẬP (PHIÊN BẢN TỐI ƯU TỐC ĐỘ) =====
+    // ===== KIỂM TRA BAN =====
     async function checkIfBanned() {
-      // Nếu đã bị chặn ở bước local (localStorage), bỏ qua không cần gọi mạng
       if (localStorage.getItem('tb_banned_device') === '1') return;
 
       const clientIP = await getClientIP();
@@ -522,7 +697,6 @@
         if (bans) {
           for (const key in bans) {
             const ban = bans[key];
-            // Kiểm tra trùng IP hoặc Fingerprint
             if (ban.ip === clientIP || ban.fingerprint === fingerprint) {
               isBanned = true;
               break;
@@ -531,38 +705,24 @@
         }
 
         if (isBanned) {
-          // 1. Đánh dấu vào bộ nhớ máy để lần sau mở web là bị chặn tức thì (0.001 giây)
           localStorage.setItem('tb_banned_device', '1');
-          
-          // 2. XÓA SẠCH TOÀN BỘ DOM, ép trình duyệt render màn hình đen tuyệt đối
           document.open();
           document.write('<style>html, body { background-color: #000000 !important; margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; cursor: none !important; } * { display: none !important; }</style>');
           document.close();
-          
-          // 3. Chuyển hướng sau 50ms (Cực nhanh, gây cảm giác link lỗi/treo trình duyệt)
           setTimeout(() => {
             window.location.replace('https://www.google.com');
           }, 50);
-          
         } else {
-          // KHÔNG BỊ BAN: Cho phép hiển thị trang web bình thường
           const styleBlock = document.getElementById('tb-anti-flash');
-          if (styleBlock) {
-            styleBlock.remove(); // Xóa rule ẩn
-          }
-          document.documentElement.style.display = 'block'; // Ép hiển thị lại
-          
-          // Kích hoạt hiệu ứng reveal SAU KHI trang đã hiển thị hoàn toàn
+          if (styleBlock) styleBlock.remove();
+          document.documentElement.style.display = 'block';
           initRevealAnimations();
         }
       } catch (error) {
         console.error("Lỗi kiểm tra ban:", error);
-        // Nếu lỗi mạng (Firebase lỗi), vẫn cho hiển thị trang web để không chặn nhầm người dùng thật
         const styleBlock = document.getElementById('tb-anti-flash');
         if (styleBlock) styleBlock.remove();
         document.documentElement.style.display = 'block';
-        
-        // Vẫn kích hoạt hiệu ứng reveal khi có lỗi
         initRevealAnimations();
       }
     }
@@ -578,6 +738,22 @@
         return false;
       }
     });
+
+    // ===== FAQ ACCORDION =====
+    document.querySelectorAll('.faq-question').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const item = this.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+        // Đóng tất cả item khác (chỉ mở 1 câu 1 lúc)
+        document.querySelectorAll('.faq-item.open').forEach(function(el) {
+          if (el !== item) el.classList.remove('open');
+        });
+        // Toggle câu hiện tại
+        item.classList.toggle('open', !isOpen);
+      });
+    });
   </script>
+
+  <script src="/api/track"></script>
 </body>
 </html>
