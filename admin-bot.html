@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADMIN | Quản Lý Bot Telegram</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #07080b; color: #f5f7fb; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.08); flex-wrap: wrap; gap: 12px; }
+    .header h1 { font-size: 26px; font-weight: 900; background: linear-gradient(180deg, #fef08a, #d4af37); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .header span { font-size: 14px; color: #98a0af; }
+    .card { background: #0f1117; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 18px 22px; margin-top: 20px; box-shadow: 0 22px 60px rgba(0,0,0,.38); }
+    .card h3 { color: #d4af37; font-size: 16px; font-weight: 900; margin-bottom: 14px; }
+    .bot-form { display: flex; gap: 12px; flex-wrap: wrap; }
+    .bot-form input { flex: 1; min-width: 200px; background: #090b10; color: #fff; border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 12px 16px; font-size: 14px; outline: none; transition: border .2s; }
+    .bot-form input:focus { border-color: rgba(212,175,55,.45); }
+    .bot-form button { background: linear-gradient(180deg, #fef08a, #d4af37); color: #111; border: none; border-radius: 10px; padding: 12px 28px; font-weight: 800; font-size: 14px; cursor: pointer; transition: all .2s; white-space: nowrap; }
+    .bot-form button:hover:not(:disabled) { transform: scale(1.02); filter: brightness(1.05); }
+    .bot-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .status-msg { margin-top: 10px; font-size: 13px; color: #98a0af; }
+    .stats-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 14px; }
+    .stat-box { background: #090b10; border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 12px 16px; text-align: center; }
+    .stat-box .num { font-size: 26px; font-weight: 900; color: #fff; }
+    .stat-box .label { font-size: 11px; color: #98a0af; text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+    .bot-list { display: grid; gap: 10px; margin-top: 10px; }
+    .bot-item { background: #090b10; border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 12px 14px; transition: all .2s; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+    .bot-item:hover { border-color: rgba(212,175,55,.15); background: #10131c; }
+    .bot-info { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; flex: 1; }
+    .bot-info .rank { font-size: 14px; font-weight: 900; color: #d4af37; min-width: 28px; }
+    .bot-info .name { font-weight: 700; font-size: 15px; color: #fff; }
+    .bot-info .token { font-size: 12px; color: #98a0af; font-family: monospace; }
+    .bot-info .count { background: rgba(212,175,55,.12); padding: 2px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #fef08a; }
+    .bot-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .bot-actions button { background: transparent; border: 1px solid rgba(255,255,255,.08); color: #98a0af; font-size: 12px; cursor: pointer; padding: 5px 10px; transition: all .2s; border-radius: 6px; font-weight: 600; }
+    .bot-actions button:hover { background: rgba(255,255,255,.04); color: #fff; }
+    .bot-actions .btn-del { color: #ef5350; border-color: rgba(239,83,80,.2); }
+    .bot-actions .btn-del:hover { background: rgba(239,83,80,.1); color: #ff6b6b; border-color: rgba(239,83,80,.4); }
+    .bot-actions .btn-users { color: #7db9ff; border-color: rgba(125,185,255,.2); }
+    .bot-actions .btn-users:hover { background: rgba(125,185,255,.08); color: #a8d0ff; }
+    .bot-actions .btn-wh { color: #fef08a; border-color: rgba(212,175,55,.2); }
+    .bot-actions .btn-wh:hover { background: rgba(212,175,55,.08); }
+    .bot-actions .status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+    .bot-actions .status.online { color: #31c48d; background: rgba(49,196,141,.08); }
+    .bot-actions .status.offline { color: #ef5350; background: rgba(239,83,80,.08); }
+    .bot-actions .status.warn { color: #ffb84d; background: rgba(255,184,77,.08); }
+    .empty-state { color: #98a0af; text-align: center; padding: 30px 20px; font-size: 14px; }
+    .user-list { margin-top: 16px; max-height: 500px; overflow-y: auto; }
+    .user-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); cursor: pointer; transition: background .2s; }
+    .user-item:hover { background: rgba(255,255,255,.03); }
+    .user-item .username { color: #fff; font-weight: 600; }
+    .user-item .user-id { color: #98a0af; font-size: 12px; font-family: monospace; margin-left: 6px; }
+    .user-item .started { color: #98a0af; font-size: 11px; }
+    .user-item .badge { background: rgba(212,175,55,.12); padding: 1px 10px; border-radius: 12px; font-size: 11px; color: #fef08a; }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 50; display: none; }
+    .overlay.active { display: block; }
+    .drawer { position: fixed; top: 0; right: 0; width: min(520px, 100%); height: 100vh; background: #0b0e14; border-left: 1px solid rgba(255,255,255,.08); z-index: 60; padding: 20px; overflow-y: auto; transform: translateX(100%); transition: transform .3s ease; }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .drawer-header h3 { font-size: 18px; font-weight: 900; color: #fff; }
+    .drawer-header .close { background: transparent; border: none; color: #98a0af; font-size: 28px; cursor: pointer; }
+    .drawer-body { padding-top: 16px; }
+    .info-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,.03); }
+    .info-row .label { color: #98a0af; }
+    .info-row .value { color: #fff; font-weight: 600; word-break: break-all; text-align: right; }
+    .info-row .value a { color: #7db9ff; text-decoration: none; }
+    .info-row .value a:hover { text-decoration: underline; }
+    .chat-log { margin-top: 16px; max-height: 400px; overflow-y: auto; }
+    .chat-log .msg { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.03); font-size: 13px; display: flex; gap: 8px; }
+    .chat-log .msg .time { color: #98a0af; font-size: 11px; min-width: 60px; }
+    .chat-log .msg .from { font-weight: 700; min-width: 55px; }
+    .chat-log .msg .from.user { color: #7db9ff; }
+    .chat-log .msg .from.bot { color: #fef08a; }
+    .chat-log .msg .text { color: #e5e7eb; word-break: break-word; flex: 1; }
+    .reply-area { margin-top: 12px; display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,.06); padding-top: 12px; }
+    .reply-area input { flex: 1; background: #090b10; color: #fff; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: 8px 12px; outline: none; font-size: 13px; }
+    .reply-area input:focus { border-color: rgba(212,175,55,.45); }
+    .reply-area button { background: linear-gradient(180deg, #fef08a, #d4af37); color: #111; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .reply-area button:hover { transform: scale(1.02); filter: brightness(1.05); }
+    .btn-back { display: inline-block; margin-bottom: 12px; color: #98a0af; font-size: 13px; cursor: pointer; border: 1px solid rgba(255,255,255,.06); padding: 4px 14px; border-radius: 6px; transition: all .2s; }
+    .btn-back:hover { color: #fff; border-color: rgba(255,255,255,.15); }
+    .search-box { width: 100%; background: #090b10; color: #fff; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none; margin-bottom: 12px; }
+    .search-box:focus { border-color: rgba(212,175,55,.45); }
+    @media (max-width: 600px) {
+      .bot-form input { min-width: 100%; }
+      .bot-item { flex-direction: column; align-items: stretch; }
+      .bot-info { gap: 6px; }
+      .bot-actions { justify-content: flex-end; }
+      .header h1 { font-size: 22px; }
+      .drawer { width: 100%; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>🤖 Quản lý Bot</h1>
+      <span>Webhook tự động 24/7 — không cần bật tab</span>
+    </div>
+    <a href="index.html" style="color:#98a0af;font-size:14px;text-decoration:none;border:1px solid rgba(255,255,255,.08);padding:8px 16px;border-radius:8px;">
+      ← Về trang chủ
+    </a>
+  </div>
+
+  <!-- Thêm bot -->
+  <div class="card">
+    <h3>➕ Thêm bot mới</h3>
+    <div class="bot-form">
+      <input type="text" id="botTokenInput" placeholder="Nhập token bot (ví dụ: 123456:ABC...)" />
+      <button id="addBotBtn">Thêm bot</button>
+    </div>
+    <div id="addStatus" class="status-msg"></div>
+  </div>
+
+  <!-- Thống kê -->
+  <div class="card">
+    <h3>📊 Tổng quan</h3>
+    <div class="stats-summary">
+      <div class="stat-box"><div class="num" id="totalBots">0</div><div class="label">Tổng bot</div></div>
+      <div class="stat-box"><div class="num" id="totalUsers">0</div><div class="label">Tổng người dùng</div></div>
+      <div class="stat-box"><div class="num" id="topBotName">-</div><div class="label">Bot nhiều user nhất</div></div>
+    </div>
+  </div>
+
+  <!-- Danh sách bot -->
+  <div class="card">
+    <h3>📋 Danh sách bot</h3>
+    <div id="botListContainer" class="bot-list"></div>
+  </div>
+</div>
+
+<!-- OVERLAY & DRAWER -->
+<div class="overlay" id="drawerOverlay"></div>
+<div class="drawer" id="userDrawer">
+  <div class="drawer-header">
+    <h3>👤 Chi tiết người dùng</h3>
+    <button class="close" id="closeDrawer">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<script>
+  // ===== FIREBASE CONFIG (giữ nguyên của bạn) =====
+  const firebaseConfig = {
+    apiKey: "AIzaSy...",
+    authDomain: "checktime-3a697.firebaseapp.com",
+    databaseURL: "https://checktime-3a697-default-rtdb.firebaseio.com",
+    projectId: "checktime-3a697",
+    storageBucket: "checktime-3a697.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // ===== DOM REFS =====
+  const $ = id => document.getElementById(id);
+  const botTokenInput = $('botTokenInput');
+  const addBotBtn = $('addBotBtn');
+  const addStatus = $('addStatus');
+  const botListContainer = $('botListContainer');
+  const totalBots = $('totalBots');
+  const totalUsers = $('totalUsers');
+  const topBotName = $('topBotName');
+  const drawerOverlay = $('drawerOverlay');
+  const userDrawer = $('userDrawer');
+  const closeDrawerBtn = $('closeDrawer');
+  const drawerBody = $('drawerBody');
+
+  // ===== GLOBAL =====
+  let bots = {};
+  let botUsers = {};
+  let botNames = {};
+  let webhookStatus = {};   // { token: { url, pending, error } }
+  let currentBotToken = null;
+  let currentUserId = null;
+
+  // ===== HELPERS =====
+  function escapeHtml(v) {
+    return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+  }
+
+  function getWebhookUrl(token) {
+    const origin = window.location.origin;
+    return origin + '/api/webhook?token=' + encodeURIComponent(token);
+  }
+
+  // ===== TELEGRAM API =====
+  async function tgGet(token, method) {
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/${method}`);
+      return await res.json();
+    } catch (e) { return { ok: false, error: e.message }; }
+  }
+
+  async function tgPost(token, method, payload) {
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    } catch (e) { return { ok: false, error: e.message }; }
+  }
+
+  async function checkBotToken(token) {
+    const data = await tgGet(token, 'getMe');
+    if (data.ok) return { ok: true, username: data.result.username, name: data.result.first_name };
+    return { ok: false };
+  }
+
+  async function setWebhook(token) {
+    const url = getWebhookUrl(token);
+    const data = await tgGet(token, `setWebhook?url=${encodeURIComponent(url)}&drop_pending_updates=true`);
+    return data;
+  }
+
+  async function deleteWebhook(token) {
+    return await tgGet(token, 'deleteWebhook?drop_pending_updates=true');
+  }
+
+  async function getWebhookInfo(token) {
+    const data = await tgGet(token, 'getWebhookInfo');
+    if (data.ok) {
+      return {
+        url: data.result.url || '',
+        pending: data.result.pending_update_count || 0,
+        error: data.result.last_error_message || '',
+        hasCustomCert: data.result.has_custom_certificate || false
+      };
+    }
+    return { url: '', pending: 0, error: 'API error', hasCustomCert: false };
+  }
+
+  // ===== GỬI TIN NHẮN =====
+  async function sendMessageViaBot(botToken, chatId, text) {
+    const data = await tgPost(botToken, 'sendMessage', { chat_id: chatId, text: text });
+    if (!data.ok) return false;
+    // Lưu log
+    await db.ref(`bot_chat_logs/${botToken}/${chatId}`).push({
+      from: 'bot',
+      text: text,
+      timestamp: new Date().toISOString()
+    });
+    return true;
+  }
+
+  // ===== LOAD DATA =====
+  function loadData() {
+    db.ref('bots').on('value', snapshot => {
+      bots = snapshot.val() || {};
+      renderBots();
+      updateStats();
+      refreshAllWebhookStatus();
+    });
+    db.ref('bot_users').on('value', snapshot => {
+      botUsers = snapshot.val() || {};
+      renderBots();
+      updateStats();
+    });
+    db.ref('bot_names').on('value', snapshot => {
+      botNames = snapshot.val() || {};
+      renderBots();
+    });
+  }
+
+  async function refreshAllWebhookStatus() {
+    const tokens = Object.keys(bots);
+    for (const token of tokens) {
+      webhookStatus[token] = await getWebhookInfo(token);
+    }
+    renderBots();
+  }
+
+  function getBotUserCount(botToken) {
+    const users = botUsers[botToken];
+    return users ? Object.keys(users).length : 0;
+  }
+
+  function getAllBotUsersCount() {
+    let total = 0;
+    for (const t in botUsers) total += Object.keys(botUsers[t]).length;
+    return total;
+  }
+
+  function getTopBot() {
+    let topToken = null, topCount = 0;
+    for (const t in botUsers) {
+      const c = Object.keys(botUsers[t]).length;
+      if (c > topCount) { topCount = c; topToken = t; }
+    }
+    if (topToken) {
+      return { name: botNames[topToken] || topToken.substring(0, 10) + '...', count: topCount };
+    }
+    return null;
+  }
+
+  function webhookBadge(token) {
+    const st = webhookStatus[token];
+    if (!st) return `<span class="status warn">⏳ Đang check</span>`;
+    if (st.error) return `<span class="status offline" title="${escapeHtml(st.error)}">❌ Lỗi webhook</span>`;
+    if (!st.url) return `<span class="status warn">⚠️ Chưa set</span>`;
+    if (st.url.indexOf('/api/webhook') === -1) return `<span class="status warn">🔗 Webhook ngoài</span>`;
+    return `<span class="status online">✅ Webhook OK${st.pending ? ' • ' + st.pending : ''}</span>`;
+  }
+
+  function renderBots() {
+    const tokens = Object.keys(bots);
+    if (!tokens.length) {
+      botListContainer.innerHTML = `<div class="empty-state">Chưa có bot nào. Hãy thêm bot đầu tiên!</div>`;
+      return;
+    }
+    const sorted = tokens.sort((a, b) => getBotUserCount(b) - getBotUserCount(a));
+    let html = '';
+    sorted.forEach((token, index) => {
+      const count = getBotUserCount(token);
+      const name = botNames[token] || bots[token]?.name || token.substring(0, 10) + '...';
+      const isOnline = bots[token]?.online !== false;
+      const rank = index + 1;
+      html += `
+        <div class="bot-item">
+          <div class="bot-info">
+            <span class="rank">#${rank}</span>
+            <span class="name">${escapeHtml(name)}</span>
+            <span class="token">${escapeHtml(token.substring(0, 12))}...</span>
+            <span class="count"><i class="fas fa-users"></i> ${count}</span>
+          </div>
+          <div class="bot-actions">
+            ${webhookBadge(token)}
+            <button class="btn-wh btn-set-wh" data-token="${escapeHtml(token)}" title="Set webhook">
+              <i class="fas fa-link"></i> Set WH
+            </button>
+            <button class="btn-wh btn-rm-wh" data-token="${escapeHtml(token)}" title="Xóa webhook">
+              <i class="fas fa-unlink"></i>
+            </button>
+            <button class="btn-users" data-token="${escapeHtml(token)}">
+              <i class="fas fa-list-ul"></i> Users
+            </button>
+            <button class="btn-del delete-bot" data-token="${escapeHtml(token)}" title="Xóa bot">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    });
+    botListContainer.innerHTML = html;
+
+    botListContainer.querySelectorAll('.btn-users').forEach(btn => {
+      btn.addEventListener('click', function () {
+        openUserList(this.dataset.token);
+      });
+    });
+
+    botListContainer.querySelectorAll('.btn-set-wh').forEach(btn => {
+      btn.addEventListener('click', async function () {
+        const token = this.dataset.token;
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        const r = await setWebhook(token);
+        if (r.ok) {
+          alert('✅ Set webhook thành công!');
+        } else {
+          alert('❌ Lỗi: ' + (r.description || 'Unknown'));
+        }
+        await refreshAllWebhookStatus();
+      });
+    });
+
+    botListContainer.querySelectorAll('.btn-rm-wh').forEach(btn => {
+      btn.addEventListener('click', async function () {
+        const token = this.dataset.token;
+        if (!confirm('Xóa webhook của bot này? Bot sẽ không nhận tin nhắn nữa.')) return;
+        this.disabled = true;
+        const r = await deleteWebhook(token);
+        if (r.ok) alert('✅ Đã xóa webhook.');
+        else alert('❌ Lỗi: ' + (r.description || 'Unknown'));
+        await refreshAllWebhookStatus();
+      });
+    });
+
+    botListContainer.querySelectorAll('.delete-bot').forEach(btn => {
+      btn.addEventListener('click', async function () {
+        const token = this.dataset.token;
+        if (!confirm(`Xóa bot ${token.substring(0, 12)}...?\n\n- Sẽ xóa webhook\n- Sẽ xóa khỏi danh sách\n- Dữ liệu users/logs vẫn giữ`)) return;
+        await deleteWebhook(token);
+        await db.ref(`bots/${token}`).remove();
+        await db.ref(`bot_names/${token}`).remove();
+        alert('✅ Đã xóa bot.');
+      });
+    });
+  }
+
+  function updateStats() {
+    const tokens = Object.keys(bots);
+    totalBots.textContent = tokens.length;
+    totalUsers.textContent = getAllBotUsersCount();
+    const top = getTopBot();
+    topBotName.textContent = top ? `${top.name} (${top.count})` : '-';
+  }
+
+  // ===== USER LIST =====
+  function openUserList(botToken) {
+    currentBotToken = botToken;
+    const users = botUsers[botToken] || {};
+    const userIds = Object.keys(users);
+    if (!userIds.length) {
+      drawerBody.innerHTML = `<div class="empty-state">Bot này chưa có người dùng nào.</div>`;
+      drawerOverlay.classList.add('active');
+      userDrawer.classList.add('open');
+      return;
+    }
+
+    let html = `
+      <div class="btn-back" id="closeUserList">← Quay lại</div>
+      <input class="search-box" id="userSearch" placeholder="Tìm user (ID, username, tên)..." />
+      <div class="user-list" id="userListContainer">
+    `;
+    userIds.forEach(userId => {
+      const u = users[userId];
+      const displayName = u.first_name || u.username || userId;
+      const started = u.started_at ? new Date(u.started_at).toLocaleString('vi-VN') : '-';
+      html += `
+        <div class="user-item" data-userid="${escapeHtml(userId)}" data-bottoken="${escapeHtml(botToken)}">
+          <div>
+            <span class="username">${escapeHtml(displayName)}</span>
+            <span class="user-id">${escapeHtml(userId)}</span>
+          </div>
+          <div>
+            <span class="started">${escapeHtml(started)}</span>
+            <span class="badge"><i class="fas fa-comment"></i> Xem</span>
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    drawerBody.innerHTML = html;
+    drawerOverlay.classList.add('active');
+    userDrawer.classList.add('open');
+
+    $('userSearch').addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      document.querySelectorAll('.user-item').forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(q) ? 'flex' : 'none';
+      });
+    });
+
+    $('closeUserList').addEventListener('click', closeDrawer);
+
+    document.querySelectorAll('.user-item').forEach(item => {
+      item.addEventListener('click', function () {
+        openUserDetail(this.dataset.bottoken, this.dataset.userid);
+      });
+    });
+  }
+
+  // ===== USER DETAIL =====
+  async function openUserDetail(botToken, userId) {
+    currentBotToken = botToken;
+    currentUserId = userId;
+    const snap = await db.ref(`bot_users/${botToken}/${userId}`).once('value');
+    const user = snap.val();
+    if (!user) {
+      drawerBody.innerHTML = `<div class="empty-state">Không tìm thấy user.</div>`;
+      return;
+    }
+
+    const logSnap = await db.ref(`bot_chat_logs/${botToken}/${userId}`).once('value');
+    const logs = logSnap.val();
+    const entries = logs ? Object.keys(logs).map(k => ({ key: k, ...logs[k] })) : [];
+    entries.sort((a, b) => (a.timestamp || '').localeCompare(b.timestamp || ''));
+
+    const username = user.username || '';
+    const profileLink = username ? `https://t.me/${username}` : `tg://user?id=${userId}`;
+    const profileLinkText = username ? `@${username}` : `ID: ${userId}`;
+
+    let html = `
+      <div class="btn-back" id="backToUserList">← Quay lại danh sách</div>
+      <div class="info-row"><span class="label">User ID</span><span class="value">${escapeHtml(userId)}</span></div>
+      <div class="info-row"><span class="label">Username</span><span class="value"><a href="${profileLink}" target="_blank">${escapeHtml(profileLinkText)}</a></span></div>
+      <div class="info-row"><span class="label">First name</span><span class="value">${escapeHtml(user.first_name || '-')}</span></div>
+      <div class="info-row"><span class="label">Last name</span><span class="value">${escapeHtml(user.last_name || '-')}</span></div>
+      <div class="info-row"><span class="label">Started at</span><span class="value">${escapeHtml(user.started_at ? new Date(user.started_at).toLocaleString('vi-VN') : '-')}</span></div>
+      <div style="margin-top:12px;border-top:1px solid rgba(255,255,255,.06);padding-top:12px;">
+        <strong style="color:#d4af37;">💬 Lịch sử chat (${entries.length} tin nhắn)</strong>
+        <div class="chat-log" id="chatLogContainer">
+    `;
+
+    if (!entries.length) {
+      html += `<div style="color:#98a0af;padding:8px 0;">Chưa có tin nhắn nào.</div>`;
+    } else {
+      entries.forEach(log => {
+        const time = log.timestamp ? new Date(log.timestamp).toLocaleString('vi-VN') : '';
+        const isUser = log.from === 'user';
+        const fromLabel = isUser ? '👤 User' : '🤖 Bot';
+        const fromClass = isUser ? 'user' : 'bot';
+        html += `
+          <div class="msg">
+            <span class="time">${escapeHtml(time)}</span>
+            <span class="from ${fromClass}">${escapeHtml(fromLabel)}</span>
+            <span class="text">${escapeHtml(log.text || '(trống)')}</span>
+          </div>
+        `;
+      });
+    }
+
+    html += `
+        </div>
+      </div>
+      <div class="reply-area">
+        <input type="text" id="replyInput" placeholder="Nhập tin nhắn trả lời..." />
+        <button id="sendReplyBtn">Gửi</button>
+      </div>
+    `;
+    drawerBody.innerHTML = html;
+
+    $('backToUserList').addEventListener('click', () => openUserList(botToken));
+
+    const replyInput = $('replyInput');
+    const sendBtn = $('sendReplyBtn');
+
+    async function sendReply() {
+      const text = replyInput.value.trim();
+      if (!text) return;
+      sendBtn.disabled = true;
+      sendBtn.textContent = '...';
+      const ok = await sendMessageViaBot(botToken, userId, text);
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Gửi';
+      if (ok) {
+        replyInput.value = '';
+        openUserDetail(botToken, userId);
+      } else {
+        alert('❌ Gửi thất bại. Có thể user chưa từng /start bot này.');
+      }
+    }
+    sendBtn.addEventListener('click', sendReply);
+    replyInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendReply(); });
+  }
+
+  // ===== DRAWER =====
+  function closeDrawer() {
+    drawerOverlay.classList.remove('active');
+    userDrawer.classList.remove('open');
+  }
+  closeDrawerBtn.addEventListener('click', closeDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+  // ===== THÊM BOT =====
+  addBotBtn.addEventListener('click', async function () {
+    const token = botTokenInput.value.trim();
+    if (!token) {
+      addStatus.textContent = '⚠️ Vui lòng nhập token.';
+      addStatus.style.color = '#ef5350';
+      return;
+    }
+    addStatus.textContent = '⏳ Đang kiểm tra token...';
+    addStatus.style.color = '#98a0af';
+    addBotBtn.disabled = true;
+
+    // 1. Check token
+    const info = await checkBotToken(token);
+    if (!info.ok) {
+      addStatus.textContent = '❌ Token không hợp lệ.';
+      addStatus.style.color = '#ef5350';
+      addBotBtn.disabled = false;
+      return;
+    }
+
+    // 2. Set webhook
+    addStatus.textContent = '⏳ Đang set webhook...';
+    const wh = await setWebhook(token);
+    if (!wh.ok) {
+      addStatus.textContent = '⚠️ Set webhook thất bại: ' + (wh.description || 'Unknown') + '. Vẫn lưu bot.';
+      addStatus.style.color = '#ffb84d';
+    }
+
+    // 3. Lưu Firebase
+    try {
+      await db.ref(`bots/${token}`).set({
+        name: info.username || info.name,
+        addedAt: new Date().toISOString(),
+        online: true
+      });
+      await db.ref(`bot_names/${token}`).set(info.username || info.name);
+
+      if (wh.ok) {
+        addStatus.textContent = `✅ Đã thêm @${info.username} + set webhook thành công!`;
+        addStatus.style.color = '#31c48d';
+      } else {
+        addStatus.textContent = `⚠️ Đã thêm @${info.username}, nhưng webhook lỗi: ${wh.description}`;
+        addStatus.style.color = '#ffb84d';
+      }
+      botTokenInput.value = '';
+      await refreshAllWebhookStatus();
+    } catch (err) {
+      addStatus.textContent = '❌ Lỗi lưu Firebase: ' + err.message;
+      addStatus.style.color = '#ef5350';
+    }
+    addBotBtn.disabled = false;
+  });
+
+  // ===== KHỞI ĐỘNG =====
+  loadData();
+
+  // Refresh webhook status mỗi 60s
+  setInterval(refreshAllWebhookStatus, 60000);
+</script>
+</body>
+</html>
