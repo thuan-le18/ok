@@ -16,24 +16,7 @@
   <!-- ========================================== -->
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <!-- ===== META GOOGLE SEARCH CONSOLE (XÁC MINH) ===== -->
-  <meta name="google-site-verification" content="fw5OnuE4fVJkOz53c-iOEdk60KukRhBIy36EZqWkJEM" />
-  
-  <!-- ===== SEO CƠ BẢN ===== -->
-  <title>BLACKMARKET</title>
-  <meta name="description" content="TIENBAN - Nền tảng mua hàng Blackmarket" />
-  <meta name="keywords" content="billvn, blackmmo, tienban, TIENBAN, tiền bẩn, rửa tiền, bank online, muatienban, mua tiền bẩn" />
-  <link rel="canonical" href="https://tienbanccv.vercel.app/" />
-  
-  <!-- ===== OPEN GRAPH (CHIA SẺ MẠNG XÃ HỘI) ===== -->
-  <meta property="og:title" content="TIENBAN - Dịch Vụ" />
-  <meta property="og:description" content="TIENBAN cung cấp giải pháp thanh toán, hợp thức hóa dòng tiền chuyên nghiệp, bảo mật và nhanh chóng." />
-  <meta property="og:image" content="https://tienbanccv.vercel.app/og-image.jpg" />
-  <meta property="og:url" content="https://tienbanccv.vercel.app/" />
-  <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-
+  <title>TIENBAN | Trang Chủ</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   
   <!-- Firebase SDK -->
@@ -41,7 +24,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   
   <style>
-    /* ===== GIỮ NGUYÊN TOÀN BỘ CSS (TRỪ PHẦN CHAT) ===== */
     :root {
       --bg: #060608;
       --panel: #111115;
@@ -78,6 +60,7 @@
     a { color: inherit; text-decoration: none; }
     .wrap { width: min(1200px, calc(100% - 40px)); margin: 0 auto; }
 
+    /* Header Navigation */
     .nav {
       position: sticky; top: 0; z-index: 100;
       backdrop-filter: blur(16px);
@@ -140,6 +123,7 @@
       transform: translateY(-1px); 
     }
 
+    /* Hero Section */
     .hero {
       display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px;
       align-items: center; min-height: calc(100vh - 80px); padding: 40px 0;
@@ -194,6 +178,7 @@
     .stat-title { font-size: 28px; font-weight: 900; margin: 0; color: var(--gold-light); }
     .stat-desc { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
+    /* Stats Grid */
     .stats { 
       display: grid; grid-template-columns: repeat(3, 1fr); 
       gap: 24px; padding: 40px 0 60px; 
@@ -316,101 +301,162 @@
     .delay-1 { transition-delay: 100ms; }
     .delay-2 { transition-delay: 200ms; }
 
-    /* ===== FAQ (CÂU HỎI THƯỜNG GẶP) ===== */
-    .faq-list {
-      max-width: 820px;
-      margin: 0 auto;
-      display: grid;
-      gap: 14px;
-    }
-    .faq-item {
-      background: var(--panel);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 14px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-    }
-    .faq-item:hover {
-      border-color: rgba(212, 175, 55, 0.2);
-      background: var(--panel-hover);
-    }
-    .faq-item.open {
-      border-color: rgba(212, 175, 55, 0.4);
-      background: var(--panel-hover);
-    }
-    .faq-question {
-      width: 100%;
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: 16px;
-      font-weight: 700;
-      padding: 20px 24px;
-      text-align: left;
+    /* ===== FLOATING CHAT POPUP ===== */
+    .chat-button {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--gold);
+      color: #000;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      font-family: inherit;
-      transition: color 0.2s ease;
-      letter-spacing: 0.01em;
+      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+      z-index: 1000;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .faq-question:hover { color: var(--gold-light); }
-    .faq-question span {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .chat-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 30px rgba(212, 175, 55, 0.6);
     }
-    .faq-question .faq-bullet {
-      color: var(--gold);
-      font-size: 14px;
-      flex-shrink: 0;
-      transition: transform 0.3s ease;
-    }
-    .faq-item.open .faq-bullet { transform: rotate(90deg); }
-    .faq-question .faq-icon {
-      color: var(--gold);
-      font-size: 13px;
-      transition: transform 0.35s ease;
-      flex-shrink: 0;
-    }
-    .faq-item.open .faq-icon { transform: rotate(180deg); }
 
-    .faq-answer {
-      max-height: 0;
+    .chat-popup {
+      position: fixed;
+      bottom: 110px;
+      right: 30px;
+      width: 340px;
+      max-width: calc(100% - 60px);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      z-index: 1001;
+      display: none;
+      flex-direction: column;
       overflow: hidden;
-      transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-                  padding 0.4s ease,
-                  opacity 0.35s ease;
-      padding: 0 24px;
-      opacity: 0;
-      color: var(--muted);
-      line-height: 1.75;
-      font-size: 15px;
+      animation: slideUp 0.3s ease;
     }
-    .faq-item.open .faq-answer {
-      max-height: 600px;
-      padding: 0 24px 22px 24px;
-      opacity: 1;
+    .chat-popup.open {
+      display: flex;
     }
-    .faq-answer p { margin: 0 0 10px; }
-    .faq-answer p:last-child { margin-bottom: 0; }
-    .faq-answer strong { color: var(--gold-light); font-weight: 700; }
-    .faq-answer .path {
-      display: inline-flex;
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-header {
+      background: var(--gold-soft);
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 6px;
-      color: var(--gold);
+      border-bottom: 1px solid var(--border);
+    }
+    .chat-header span {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--gold-light);
+    }
+    .close-chat {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .close-chat:hover {
+      color: #fff;
+    }
+    .chat-body {
+      padding: 16px 18px;
+      max-height: 450px;
+      overflow-y: auto;
+    }
+    .chat-support h4 {
+      margin: 0 0 4px 0;
+      color: #fff;
+      font-size: 15px;
       font-weight: 700;
     }
-
-    @media (max-width: 600px) {
-      .faq-question { font-size: 15px; padding: 18px 18px; }
-      .faq-item.open .faq-answer { padding: 0 18px 18px 18px; }
+    .chat-support p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 12px 0;
+    }
+    .chat-message {
+      background: #0a0c11;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .chat-message i {
+      color: var(--gold);
+      font-size: 18px;
+      margin-top: 2px;
+    }
+    .chat-message span {
+      color: #d1d5db;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .contact-item:last-child {
+      border-bottom: none;
+    }
+    .contact-item i {
+      color: var(--gold);
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+    .contact-item span {
+      color: var(--muted);
+      font-size: 13px;
+      flex: 1;
+    }
+    .contact-item a {
+      color: var(--gold-light);
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .contact-item a:hover {
+      color: #fff;
+      text-decoration: underline;
     }
 
+    @media (max-width: 480px) {
+      .chat-popup {
+        right: 10px;
+        bottom: 100px;
+        width: calc(100% - 20px);
+        max-width: none;
+      }
+      .chat-button {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -419,9 +465,9 @@
     <div class="wrap nav-inner">
       <a class="brand" href="#">TIENBAN</a>
       <nav class="nav-links">
-        <a href="/">TRANG CHỦ</a>
+        <a href="#home">TRANG CHỦ</a>
       </nav>
-      <a class="btn btn-gold" href="/purchase">MUA NGAY</a>
+      <a class="btn btn-gold" href="purchase.html">MUA NGAY</a>
     </div>
   </header>
 
@@ -435,7 +481,7 @@
         </p>
         <p class="sub-italic">Đồng hành cùng khách hàng trên con đường phát triển bền vững.</p>
         <div class="actions">
-          <a class="btn btn-gold" href="/purchase">Bắt Đầu Giao Dịch</a>
+          <a class="btn btn-gold" href="purchase.html">Bắt Đầu Giao Dịch</a>
           <a class="btn btn-outline" href="#process">Tìm Hiểu Thêm</a>
         </div>
       </div>
@@ -512,45 +558,6 @@
         </div>
       </div>
     </section>
-
-    <!-- ===== FAQ - CÂU HỎI THƯỜNG GẶP ===== -->
-    <section id="faq" class="section">
-      <h2 class="section-title reveal">Câu Hỏi <span class="gold">Thường Gặp</span></h2>
-      <div class="faq-list">
-
-        <div class="faq-item reveal">
-          <button class="faq-question" type="button">
-            <span><i class="fas fa-caret-right faq-bullet"></i> Làm sao để mua hàng?</span>
-            <i class="fas fa-chevron-down faq-icon"></i>
-          </button>
-          <div class="faq-answer">
-            <p>Vào menu <strong>MUA NGAY</strong> → chọn gói phù hợp với nhu cầu của bạn. Khi chọn xong, hệ thống sẽ hiển thị <strong>thông tin nhận tiền</strong>. Bạn chỉ cần <strong>điền thông tin</strong> và <strong>xác nhận</strong> là hoàn tất.</p>
-          </div>
-        </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-question" type="button">
-            <span><i class="fas fa-caret-right faq-bullet"></i> Nạp và rút mất bao lâu?</span>
-            <i class="fas fa-chevron-down faq-icon"></i>
-          </button>
-          <div class="faq-answer">
-            <p>Lệnh nạp ghi nhận gần như tức thì sau khi ngân hàng báo có. Lệnh rút đi qua một bước đối soát ngắn rồi chuyển thẳng về tài khoản đã đăng ký.</p>
-          </div>
-        </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-question" type="button">
-            <span><i class="fas fa-caret-right faq-bullet"></i> Có giới hạn số tiền mỗi ngày không?</span>
-            <i class="fas fa-chevron-down faq-icon"></i>
-          </button>
-          <div class="faq-answer">
-            <p>Mỗi ngân hàng có thể mua tối đa <strong>60 triệu đồng</strong> trong vòng 3 ngày. Với giao dịch lớn hơn, vui lòng liên hệ trực tiếp qua Telegram để được hỗ trợ riêng.</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
   </main>
 
   <footer class="footer">
@@ -558,6 +565,41 @@
       © 2023 TIENBAN GROUP. All rights reserved.
     </div>
   </footer>
+
+  <!-- ===== FLOATING CHAT BUTTON & POPUP ===== -->
+  <div id="chatButton" class="chat-button" aria-label="Mở liên hệ">
+    <i class="fas fa-comment-dots"></i>
+  </div>
+
+  <div id="chatPopup" class="chat-popup">
+    <div class="chat-header">
+      <span>Liên hệ</span>
+      <button id="closeChat" class="close-chat" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="chat-body">
+      <div class="chat-support">
+        <h4>Hỗ trợ Tienban</h4>
+        <p>Chọn kênh liên hệ phù hợp</p>
+        <div class="chat-message">
+          <i class="fas fa-comment"></i>
+          <span>Xin chào! Bạn cần hỗ trợ về mua hàng, nạp tiền hay giá gói?</span>
+        </div>
+      </div>
+      <div class="chat-contact">
+        <div class="contact-item">
+          <i class="fab fa-telegram-plane"></i>
+          <span>Telegram kênh thông báo</span>
+          <a href="https://t.me/hoangphuc866" target="_blank">@hoangphuc866</a>
+        </div>
+        <div class="contact-item">
+          <i class="fab fa-telegram-plane"></i>
+          <span>Telegram hỗ trợ</span>
+          <a href="https://t.me/hungdoitien52" target="_blank">@hungdoitien52</a>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     // ===== FIREBASE CONFIG (THAY BẰNG CỦA BẠN) =====
@@ -700,6 +742,28 @@
     // Chạy kiểm tra ngay lập tức
     checkIfBanned();
 
+    // ===== CHAT POPUP =====
+    const chatButton = document.getElementById('chatButton');
+    const chatPopup = document.getElementById('chatPopup');
+    const closeChat = document.getElementById('closeChat');
+
+    chatButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      chatPopup.classList.toggle('open');
+    });
+
+    closeChat.addEventListener('click', (e) => {
+      e.stopPropagation();
+      chatPopup.classList.remove('open');
+    });
+
+    // Đóng popup khi click ra ngoài
+    document.addEventListener('click', (e) => {
+      if (!chatPopup.contains(e.target) && !chatButton.contains(e.target)) {
+        chatPopup.classList.remove('open');
+      }
+    });
+
     // Bảo vệ chống inspect
     document.addEventListener('contextmenu', (e) => e.preventDefault());
     document.addEventListener('keydown', (e) => {
@@ -708,22 +772,6 @@
         return false;
       }
     });
-
-    // ===== FAQ ACCORDION =====
-    document.querySelectorAll('.faq-question').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        const item = this.closest('.faq-item');
-        const isOpen = item.classList.contains('open');
-        // Đóng tất cả item khác (chỉ mở 1 câu 1 lúc)
-        document.querySelectorAll('.faq-item.open').forEach(function(el) {
-          if (el !== item) el.classList.remove('open');
-        });
-        // Toggle câu hiện tại
-        item.classList.toggle('open', !isOpen);
-      });
-    });
   </script>
-
-  <script src="/api/track"></script>
 </body>
 </html>
